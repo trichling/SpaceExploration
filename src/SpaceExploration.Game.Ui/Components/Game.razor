@@ -1,0 +1,29 @@
+@page "/game"
+@inject GameStateService GameStateService
+
+<canvas id="gameCanvas" width="800" height="600"></canvas>
+
+@code {
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            DrawGameState();
+        }
+    }
+
+    private void DrawGameState()
+    {
+        var drones = GameStateService.Drones;
+        foreach (var drone in drones)
+        {
+            DrawDrone(drone);
+        }
+    }
+
+    private void DrawDrone(Drone drone)
+    {
+        var jsRuntime = (IJSRuntime)ServiceProvider.GetService(typeof(IJSRuntime));
+        jsRuntime.InvokeVoidAsync("drawDrone", drone.Position.X, drone.Position.Y, drone.Heading);
+    }
+}

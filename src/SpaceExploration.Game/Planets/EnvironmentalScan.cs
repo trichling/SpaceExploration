@@ -38,7 +38,7 @@ public class EnvironmentalScan
 
         if (isWithinViewport)
         {
-            return new VisibleDrone(drone, distanceToOtherDrone, relativeAngle);
+            return new VisibleDrone(otherDrone, distanceToOtherDrone, relativeAngle);
         }
 
         return null;
