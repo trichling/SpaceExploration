@@ -1,29 +1,26 @@
 @page "/game"
+@using SpaceExploration.Game.Planets
 @inject GameStateService GameStateService
+@inject IJSRuntime JSRuntime
+@rendermode InteractiveServer
 
 <canvas id="gameCanvas" width="800" height="600"></canvas>
 
 @code {
-    protected override void OnAfterRender(bool firstRender)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
-        {
-            DrawGameState();
-        }
+        await DrawGameState();
     }
+ 
 
-    private void DrawGameState()
+    private async Task DrawGameState()
     {
         var drones = GameStateService.Drones;
         foreach (var drone in drones)
         {
-            DrawDrone(drone);
+            await DrawDrone(drone);
         }
     }
 
-    private void DrawDrone(Drone drone)
-    {
-        var jsRuntime = (IJSRuntime)ServiceProvider.GetService(typeof(IJSRuntime));
-        jsRuntime.InvokeVoidAsync("drawDrone", drone.Position.X, drone.Position.Y, drone.Heading);
-    }
+    private async Task DrawDrone(Drone drone) => await JSRuntime.InvokeVoidAsync("drawDrone", drone.Position.X * 800, drone.Position.Y * 600, drone.Heading);
 }

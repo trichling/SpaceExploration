@@ -9,6 +9,24 @@
     <link rel="stylesheet" href="app.css" />
     <link rel="stylesheet" href="SpaceExploration.Game.Ui.styles.css" />
     <link rel="icon" type="image/png" href="favicon.png" />
+      <script>
+        window.drawDrone = (x, y, heading) => {
+            console.log(`Drawing drone at ${x}, ${y} with heading ${heading}`);
+            const canvas = document.getElementById('gameCanvas');
+            const context = canvas.getContext('2d');
+            context.save();
+            context.translate(x, y);
+            context.rotate(heading * Math.PI / 180);
+            context.beginPath();
+            context.moveTo(0, -10);
+            context.lineTo(5, 10);
+            context.lineTo(-5, 10);
+            context.closePath();
+            context.fillStyle = 'red';
+            context.fill();
+            context.restore();
+        };
+    </script>
     <HeadOutlet />
 </head>
 

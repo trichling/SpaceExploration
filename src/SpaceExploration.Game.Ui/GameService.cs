@@ -3,13 +3,17 @@ using SpaceExploration.Game.Planets;
 
 public class GameStateService
 {
-    private readonly List<Drone> _drones = new List<Drone>();
 
-    public IReadOnlyList<Drone> Drones => _drones.AsReadOnly();
+    public List<Drone> Drones { get; } = new List<Drone>();
+
+    public GameStateService()
+    {
+        Drones.Add(new Drone(Guid.NewGuid(), new Coordinate(0.5, 0.5), new Angle(45)));   
+    }
 
     public void HandleDroneTurned(DroneTurned droneTurnedEvent)
     {
-        var drone = _drones.Find(d => d.DroneId == droneTurnedEvent.DroneId);
+        var drone = Drones.Find(d => d.DroneId == droneTurnedEvent.DroneId);
         if (drone != null)
         {
             drone.Heading = droneTurnedEvent.Heading;
@@ -18,6 +22,6 @@ public class GameStateService
 
     public void AddDrone(DroneDropped drone)
     {
-        _drones.Add(drone.Drone);
+        Drones.Add(drone.Drone);
     }
 }
