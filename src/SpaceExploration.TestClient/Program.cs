@@ -5,7 +5,8 @@ using SpaceExploration.TestClient;
 var builder = Host.CreateApplicationBuilder(args);
 
 var endpointConfiguration = new EndpointConfiguration("SpaceExploration.TestClient");
-endpointConfiguration.UsePersistence<LearningPersistence>();
+var persistence = endpointConfiguration.UsePersistence<LearningPersistence>();
+persistence.SagaStorageDirectory("..\\sagas");
 
 var transport = endpointConfiguration.UseTransport<LearningTransport>();
 transport.StorageDirectory("..\\transport");

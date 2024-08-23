@@ -74,7 +74,7 @@ public class Planet_Movement_Tests
 
         var publisedMessages = context.PublishedMessages.Single().Message as Events.DroneTurned;
 
-        Assert.Equal(270, publisedMessages.Heading.Degrees);
+        Assert.Equal(270, publisedMessages.Heading);
         Assert.Equal(droneId, publisedMessages.DroneId);
     }
 
@@ -130,6 +130,7 @@ public class Planet_Movement_Tests
 
         var publisedMessages = context.PublishedMessages.Single().Message as Events.DroneMoved;
 
-        Assert.Equal(publisedMessages.Position, new Coordinate(0.4, 0.5));
+        Assert.Equal(0.4, publisedMessages.X);
+        Assert.Equal(0.5, publisedMessages.Y);
     }
 }

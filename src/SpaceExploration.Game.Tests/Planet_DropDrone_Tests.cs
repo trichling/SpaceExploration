@@ -91,7 +91,7 @@ public class Planet_DropDrone_Tests
 
         Assert.NotNull(droneDroppedGame);
         Assert.Equal(message.PlanetId, droneDroppedGame.PlanetId);
-        Assert.Equal(droneId, droneDroppedGame.Drone.DroneId);
+        Assert.Equal(droneId, droneDroppedGame.DroneId);
 
     }
 }

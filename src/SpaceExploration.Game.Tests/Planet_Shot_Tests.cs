@@ -96,7 +96,7 @@ public class Planet_Shot_Tests
 
         var droneHitEvent = context.PublishedMessages.Single().Message as DroneHit;
         Assert.Equal(planetId, droneHitEvent.PlanetId);
-        Assert.Equal(visibleDroneId, droneHitEvent.DroneId);
+        Assert.Equal(visibleDroneId, droneHitEvent.TargetDroneId);
         Assert.Equal(9, droneHitEvent.RemainingHealth);
     }
 

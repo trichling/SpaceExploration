@@ -1,3 +1,5 @@
+using SpaceExploration.Game.Contracts.Commands;
+using SpaceExploration.Game.Ui;
 using SpaceExploration.Game.Ui.Components;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,6 +9,24 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddSingleton<GameStateService>();  
+
+var endpointConfiguration = new EndpointConfiguration("SpaceExploration.Ui");
+endpointConfiguration.UsePersistence<LearningPersistence>();
+
+var transport = endpointConfiguration.UseTransport<LearningTransport>();
+transport.StorageDirectory("..\\transport");
+
+var routing = transport.Routing();  
+routing.RouteToEndpoint(typeof(CreatePlanet).Assembly, "SpaceExploration.Game");
+
+var conventions = endpointConfiguration.Conventions();
+conventions.DefiningCommandsAs(t => t.Namespace != null && t.Namespace.EndsWith("Commands"));
+conventions.DefiningEventsAs(t => t.Namespace != null && t.Namespace.EndsWith("Events"));
+conventions.DefiningMessagesAs(t => t.Namespace != null && t.Namespace.EndsWith("Messages"));
+
+endpointConfiguration.UseSerialization<SystemJsonSerializer>();
+
+builder.UseNServiceBus(endpointConfiguration);
 
 var app = builder.Build();
 

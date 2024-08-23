@@ -4,7 +4,8 @@ var builder = Host.CreateApplicationBuilder(args);
 builder.Services.AddHostedService<Worker>();
 
 var endpointConfiguration = new EndpointConfiguration("SpaceExploration.Game");
-endpointConfiguration.UsePersistence<LearningPersistence>();
+var persistence = endpointConfiguration.UsePersistence<LearningPersistence>();
+persistence.SagaStorageDirectory("..\\sagas");
 
 var transport = endpointConfiguration.UseTransport<LearningTransport>();
 transport.StorageDirectory("..\\transport");

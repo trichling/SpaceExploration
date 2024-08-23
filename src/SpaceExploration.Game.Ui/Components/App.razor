@@ -10,22 +10,45 @@
     <link rel="stylesheet" href="SpaceExploration.Game.Ui.styles.css" />
     <link rel="icon" type="image/png" href="favicon.png" />
       <script>
+
+        window.draw = (state) => {
+            clearCanvas();
+            state.drones.forEach(drone => drawDrone(drone.position.x * 800, drone.position.y * 600, drone.heading.degrees));
+            state.shots.forEach(shot => drawShot(shot.shooter.position.x * 800, shot.shooter.position.y * 600, shot.target.position.x * 800, shot.target.position.y * 600));
+        }
+
+        window.clearCanvas = () => {
+            const canvas = document.getElementById('gameCanvas');
+            const context = canvas.getContext('2d');
+            context.clearRect(0, 0, canvas.width, canvas.height);
+        };
+
         window.drawDrone = (x, y, heading) => {
-            console.log(`Drawing drone at ${x}, ${y} with heading ${heading}`);
             const canvas = document.getElementById('gameCanvas');
             const context = canvas.getContext('2d');
             context.save();
             context.translate(x, y);
             context.rotate(heading * Math.PI / 180);
             context.beginPath();
-            context.moveTo(0, -10);
-            context.lineTo(5, 10);
-            context.lineTo(-5, 10);
+            context.moveTo(0, -5);
+            context.lineTo(5, 5);
+            context.lineTo(-5, 5);
             context.closePath();
             context.fillStyle = 'red';
             context.fill();
             context.restore();
         };
+
+        window.drawShot = (fromX, fromY, toX, toY) => {
+            const canvas = document.getElementById('gameCanvas');
+            const context = canvas.getContext('2d');
+            context.beginPath();
+            context.moveTo(fromX, fromY);
+            context.lineTo(toX, toY);
+            context.strokeStyle = 'blue';
+            context.stroke();
+        };
+
     </script>
     <HeadOutlet />
 </head>

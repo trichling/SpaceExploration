@@ -37,12 +37,19 @@ public class Planet : Saga<PlanetData>
         var drone = new Drone(message.DroneId);
         Data.Drones.Add(drone);   
 
-        await context.Publish(new Events.DroneDropped(Data.PlanetId, drone));
+        await context.Publish(new Events.DroneDropped(Data.PlanetId, drone.DroneId, drone.Position.X, drone.Position.Y, drone.Heading.Degrees, Data.Drones.Count));
     }
 
     public async Task Handle(ScanEnvironment message, IMessageHandlerContext context)
     {
-        var visibleDrones = EnvironmentalScan.ScanEnvironment(Data.Drones.Single(d => d.DroneId == message.DroneId), Data.Drones);
+        var drone = Data.Drones.Find(d => d.DroneId == message.DroneId);
+
+        if (drone is null)
+        {
+            return;
+        }   
+
+        var visibleDrones = EnvironmentalScan.ScanEnvironment(drone, Data.Drones);
         var sensorReadings = visibleDrones.Select(d => new SensorReading(Guid.NewGuid(), d.Drone.DroneId, d.Distance, d.Angle)).ToList();
 
         if (Data.SensorReadings.ContainsKey(message.DroneId))
@@ -61,32 +68,41 @@ public class Planet : Saga<PlanetData>
     {
         if (!Data.SensorReadings.ContainsKey(message.DroneId))
         {
+            await context.Publish(new DroneMissed(Data.PlanetId, message.DroneId));
             return;
         }
 
         var reading = Data.SensorReadings[message.DroneId].Find(sr => sr.ReadingId == message.TargetId);
-        Data.SensorReadings.Remove(message.DroneId);
 
         if (reading is null)
         {
+            await context.Publish(new DroneMissed(Data.PlanetId, message.DroneId));
             return;
         }
 
         _logger.LogInformation("Drone {0} shot at drone {1}", message.DroneId, reading.DroneId);
 
-        var drone = Data.Drones.Single(d => d.DroneId == reading.DroneId);
-        drone.Health--;
+        var targetDrone = Data.Drones.Find(d => d.DroneId == reading.DroneId);
 
-        if (drone.Health <= 0)
+        if (targetDrone == null)
         {
-            _logger.LogInformation("Drone {0} destroyed", drone.DroneId);
-            Data.Drones.Remove(drone);
-
-            await context.Publish(new DroneDestroyed(Data.PlanetId, drone.DroneId));
+            await context.Publish(new DroneMissed(Data.PlanetId, message.DroneId));
             return;
         }
 
-        await context.Publish(new DroneHit(Data.PlanetId, drone.DroneId, drone.Health));
+        targetDrone.Health--;
+
+        if (targetDrone.Health <= 0)
+        {
+            _logger.LogInformation("Drone {0} destroyed", targetDrone.DroneId);
+            Data.Drones.Remove(targetDrone);
+
+            await context.Publish(new DroneDestroyed(Data.PlanetId, targetDrone.DroneId));
+            return;
+        }
+
+        Data.SensorReadings.Remove(message.DroneId);
+        await context.Publish(new DroneHit(Data.PlanetId, targetDrone.DroneId, message.DroneId, targetDrone.Health));
     }
 
     public async Task Handle(Turn message, IMessageHandlerContext context)
@@ -94,7 +110,7 @@ public class Planet : Saga<PlanetData>
         var drone = Data.Drones.Single(d => d.DroneId == message.DroneId);
         drone.Heading = drone.Heading with { Degrees = (drone.Heading.Degrees + message.Angle) % 360 };
 
-        await context.Publish(new DroneTurned(Data.PlanetId, message.DroneId, drone.Heading));
+        await context.Publish(new DroneTurned(Data.PlanetId, message.DroneId, drone.Heading.Degrees));
     }
 
     public async Task Handle(Move message, IMessageHandlerContext context)
@@ -104,9 +120,21 @@ public class Planet : Saga<PlanetData>
         var x = drone.Position.X + Math.Cos(drone.Heading.Radians) * drone.MoveDistance;
         var y = drone.Position.Y + Math.Sin(drone.Heading.Radians) * drone.MoveDistance;
 
+        if (x > 1)
+            x = x-1;
+
+        if (y > 1)
+            y = y-1;
+
+        if (x < 0)
+            x = 1 - Math.Abs(x);
+
+        if (y < 0)
+            y = 1 - Math.Abs(y);
+
         drone.Position = drone.Position with { X = x, Y = y };
 
-        await context.Publish(new DroneMoved(Data.PlanetId, message.DroneId, drone.Position));
+        await context.Publish(new DroneMoved(Data.PlanetId, message.DroneId, drone.Position.X, drone.Position.Y));
     }
 
     protected override void ConfigureHowToFindSaga(SagaPropertyMapper<PlanetData> mapper)
@@ -128,7 +156,7 @@ public class PlanetData : ContainSagaData
 
     public Dictionary<Guid, List<SensorReading>> SensorReadings { get; set; } = new Dictionary<Guid, List<SensorReading>>();
 
-
+    
 }
 
 public record SensorReading(Guid ReadingId, Guid DroneId, double Distance, double Angle);

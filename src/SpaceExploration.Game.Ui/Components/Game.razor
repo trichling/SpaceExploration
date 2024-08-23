@@ -1,26 +1,64 @@
 @page "/game"
+@rendermode InteractiveServer
+
 @using SpaceExploration.Game.Planets
+@using System.Timers
+
 @inject GameStateService GameStateService
 @inject IJSRuntime JSRuntime
-@rendermode InteractiveServer
 
 <canvas id="gameCanvas" width="800" height="600"></canvas>
 
 @code {
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+
+        if (firstRender)
+        {
+            //GameStateService.StateChanged += (sender, e) => InvokeAsync(() => StateHasChanged());
+
+            timer = new Timer();
+            timer.Interval = 30;
+            timer.Elapsed += UpdateUi;
+            timer.AutoReset = true;
+            // Start the timer
+            timer.Enabled = true;
+        }
+
         await DrawGameState();
+        base.OnAfterRender(firstRender);
     }
  
+    private Timer timer;
+
+    private void UpdateUi(object sender, ElapsedEventArgs e)
+    {
+        InvokeAsync(() => StateHasChanged());
+    }
 
     private async Task DrawGameState()
     {
-        var drones = GameStateService.Drones;
-        foreach (var drone in drones)
+        var state = GameStateService.Freeze();
+        await Draw(state);
+        @* await ClearCanvas();
+        foreach (var drone in state.Drones)
         {
             await DrawDrone(drone);
         }
+        foreach (var shot in state.Shots)
+        {
+            await DrawShot(shot);
+        } *@
+        GameStateService.RemoveDrawnShots();
     }
 
-    private async Task DrawDrone(Drone drone) => await JSRuntime.InvokeVoidAsync("drawDrone", drone.Position.X * 800, drone.Position.Y * 600, drone.Heading);
+
+    private async Task Draw(GameStateService state) => await JSRuntime.InvokeVoidAsync("draw", state);
+    private async Task ClearCanvas() => await JSRuntime.InvokeVoidAsync("clearCanvas");
+    private async Task DrawDrone(Drone drone) => await JSRuntime.InvokeVoidAsync("drawDrone", drone.Position.X * 800, drone.Position.Y * 600, drone.Heading.Degrees);
+    private async Task DrawShot(DroneShot shot)
+    {
+         await JSRuntime.InvokeVoidAsync("drawShot", shot.Shooter.Position.X * 800, shot.Shooter.Position.Y * 600, shot.Target.Position.Y * 800, shot.Target.Position.Y * 600);  
+         shot.Drawn = true;
+    }
 }
