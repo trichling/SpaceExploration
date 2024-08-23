@@ -9,9 +9,11 @@ public class Planet : Saga<PlanetData>
      , IAmStartedByMessages<CreatePlanet>
      , IHandleMessages<DropDrone>
      , IHandleMessages<ScanEnvironment>
+     , IHandleMessages<LocatePosition>
      , IHandleMessages<Shot>
      , IHandleMessages<Turn>
      , IHandleMessages<Move>
+
 {
     private readonly ILogger<Planet> _logger;
 
@@ -63,6 +65,19 @@ public class Planet : Saga<PlanetData>
 
         await context.Reply(new ScanEnvironmentResult(message.DroneId, sensorReadings.Select(sr => new DroneReading(sr.ReadingId, sr.Distance, sr.Angle)).ToList()));
     }
+
+    public async Task Handle(LocatePosition message, IMessageHandlerContext context)
+    {
+        var drone = Data.Drones.Find(d => d.DroneId == message.DroneId);
+
+        if (drone is null)
+        {
+            return;
+        }
+
+        await context.Reply(new LocatePositionResult(message.DroneId, drone.Position.X, drone.Position.Y));
+    }
+
 
     public async Task Handle(Shot message, IMessageHandlerContext context)
     {
@@ -137,12 +152,14 @@ public class Planet : Saga<PlanetData>
         await context.Publish(new DroneMoved(Data.PlanetId, message.DroneId, drone.Position.X, drone.Position.Y));
     }
 
+
     protected override void ConfigureHowToFindSaga(SagaPropertyMapper<PlanetData> mapper)
     {
         mapper.MapSaga(saga => saga.PlanetId)
             .ToMessage<CreatePlanet>(msg => msg.PlanetId)
             .ToMessage<DropDrone>(msg => msg.PlanetId)
             .ToMessage<ScanEnvironment>(msg => msg.PlanetId)
+            .ToMessage<LocatePosition>(msg => msg.PlanetId)
             .ToMessage<Shot>(msg => msg.PlanetId)
             .ToMessage<Turn>(msg => msg.PlanetId)
             .ToMessage<Move>(msg => msg.PlanetId);

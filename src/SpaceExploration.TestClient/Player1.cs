@@ -21,13 +21,6 @@ public class Player1 : BackgroundService
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         await _messageSession.Send(new CreatePlanet(PlanetId, "Earth"));
-        await _messageSession.Send(new DropDrone(Drone1Id, PlanetId));
-
-        for (var i = 0; i < 100; i++)
-        {
-            await _messageSession.Send(new DropDrone(Guid.NewGuid(), PlanetId));
-        }
-
 
         while (!stoppingToken.IsCancellationRequested)
         {
@@ -35,6 +28,25 @@ public class Player1 : BackgroundService
         }
     }
 }
+
+public class PlanetCreatedHandler : IHandleMessages<PlanetCreated>
+{
+    public async Task Handle(PlanetCreated message, IMessageHandlerContext context)
+    {
+        if (message.PlanetId != Player1.PlanetId)
+        {
+            return;
+        }
+
+        await context.Send(new DropDrone(Player1.Drone1Id, Player1.PlanetId));
+
+        for (var i = 0; i < 90; i++)
+        {
+            await context.Send(new DropDrone(Guid.NewGuid(), Player1.PlanetId));
+        }
+
+    }
+}	
 
 public class DroneDroppedHandler : IHandleMessages<DroneDropped>
 {
@@ -75,6 +87,16 @@ public class ScanResultHandler : IHandleMessages<ScanEnvironmentResult>
             await context.Send(new Move(Player1.PlanetId, Player1.Drone1Id));
             await context.Send(new ScanEnvironment(Player1.Drone1Id, Player1.PlanetId));
         }
+    }
+}
+
+public class LocatePositionHandler : IHandleMessages<LocatePositionResult>
+{
+    public Task Handle(LocatePositionResult message, IMessageHandlerContext context)
+    {
+        Console.WriteLine("Position located: {0}, {1}", message.PositionX, message.PositionY);
+
+        return Task.CompletedTask;
     }
 }
 
