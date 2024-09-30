@@ -2,33 +2,83 @@ namespace SpaceExploration.Game.Ui;
 
 using SpaceExploration.Game.Events;
 using SpaceExploration.Game.Planets;
+using System.Collections.Concurrent; // Add this using directive
 
 public class GameStateService
+{
+    readonly ConcurrentDictionary<Guid, GameState> gameStates = new(); // Change Dictionary to ConcurrentDictionary
+
+    public GameState GetGameState(Guid planetId)
+    {
+        var gameState = gameStates.GetOrAdd(planetId, new GameState(planetId));
+        return gameState.Freeze();
+    }
+
+    public void HandleDroneDropped(DroneDropped message)
+    {
+        var gameState = gameStates.GetOrAdd(message.PlanetId, new GameState(message.PlanetId));
+        gameState.HandleDroneDropped(message);
+    }
+
+    public void HandleDroneTurned(DroneTurned message)
+    {
+        var gameState = gameStates.GetOrAdd(message.PlanetId, new GameState(message.PlanetId));
+        gameState.HandleDroneTurned(message);
+    }
+
+    internal void HandleDroneMoved(DroneMoved message)
+    {
+        var gameState = gameStates.GetOrAdd(message.PlanetId, new GameState(message.PlanetId));
+        gameState.HandleDroneMoved(message);
+    }
+
+    internal void HandleDroneHit(Contracts.Events.DroneHit message)
+    {
+        var gameState = gameStates.GetOrAdd(message.PlanetId, new GameState(message.PlanetId));
+        gameState.HandleDroneHit(message);
+    }
+
+    internal void HandleDroneDestroyed(Contracts.Events.DroneDestroyed message)
+    {
+        var gameState = gameStates.GetOrAdd(message.PlanetId, new GameState(message.PlanetId));
+        gameState.HandleDroneDestroyed(message);
+    }
+
+    internal void RemoveShots(Guid planetId)
+    {
+        var gameState = gameStates.GetOrAdd(planetId, new GameState(planetId));
+        gameState.RemoveDrawnShots();
+    }
+}
+
+public class GameState
 {
 
     public event EventHandler StateChanged;
 
-    public List<Drone> Drones { get; } 
-    public List<DroneShot> Shots { get; } 
+    public List<Drone> Drones { get; }
+    public List<DroneShot> Shots { get; }
+    public Guid WorldId { get; }
 
-
-    public GameStateService()
+    public GameState(Guid worldId)
     {
         Drones = new List<Drone>();
         Shots = new List<DroneShot>();
+        WorldId = worldId;
     }
 
-    private GameStateService(List<Drone> drones, List<DroneShot> shots)
+    private GameState(Guid worldId, List<Drone> drones, List<DroneShot> shots)
     {
+        WorldId = worldId;
         Drones = drones;
         Shots = shots;
-    }   
+    }
 
     public void HandleDroneDropped(DroneDropped message)
     {
 
         Console.WriteLine(Drones.Count);
-        if (!Drones.Any(d => d.DroneId == message.DroneId))
+        if (!Drones.Exists(d => d.DroneId == message.DroneId))
         {
             Drones.Add(new Drone(message.DroneId, new Coordinate(message.X, message.Y), new Angle(message.Heading)));
         }
@@ -39,7 +89,7 @@ public class GameStateService
     public void HandleDroneTurned(DroneTurned message)
     {
 
-        if (!Drones.Any(d => d.DroneId == message.DroneId))
+        if (!Drones.Exists(d => d.DroneId == message.DroneId))
         {
             var newDrone = new Drone(message.DroneId)
             {
@@ -60,7 +110,7 @@ public class GameStateService
     internal void HandleDroneMoved(DroneMoved message)
     {
 
-        if (!Drones.Any(d => d.DroneId == message.DroneId))
+        if (!Drones.Exists(d => d.DroneId == message.DroneId))
         {
             var newDrone = new Drone(message.DroneId)
             {
@@ -78,16 +128,16 @@ public class GameStateService
         StateChanged?.Invoke(this, EventArgs.Empty);
     }
 
-    internal void HandleDroneHit(SpaceExploration.Game.Contracts.Events.DroneHit message)
+    internal void HandleDroneHit(Contracts.Events.DroneHit message)
     {
 
-        if (!Drones.Any(d => d.DroneId == message.ShootingDroneId))
+        if (!Drones.Exists(d => d.DroneId == message.ShootingDroneId))
         {
             var newDrone = new Drone(message.ShootingDroneId);
             Drones.Add(newDrone);
         }
 
-        if (!Drones.Any(d => d.DroneId == message.TargetDroneId))
+        if (!Drones.Exists(d => d.DroneId == message.TargetDroneId))
         {
             var newDrone = new Drone(message.TargetDroneId);
             Drones.Add(newDrone);
@@ -106,9 +156,9 @@ public class GameStateService
         StateChanged?.Invoke(this, EventArgs.Empty);
     }
 
-    internal void HandleDroneDestroyed(SpaceExploration.Game.Contracts.Events.DroneDestroyed message)
+    internal void HandleDroneDestroyed(Contracts.Events.DroneDestroyed message)
     {
-        
+
         var drone = Drones.Find(d => d.DroneId == message.DroneId);
         if (drone != null)
         {
@@ -120,14 +170,14 @@ public class GameStateService
 
     internal void RemoveDrawnShots()
     {
-        //Shots.RemoveAll(s => s.Drawn);
         Shots.Clear();
     }
 
-    internal GameStateService Freeze()
+    internal GameState Freeze()
     {
-        return new GameStateService
+        return new GameState
         (
+            WorldId,
             Drones.ToList(),
             Shots.ToList()
         );

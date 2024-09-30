@@ -1,22 +1,28 @@
-@page "/game"
+@page "/game/{worldid}"
 @rendermode InteractiveServer
 
 @using SpaceExploration.Game.Planets
 @using System.Timers
 
-@inject GameStateService GameStateService
 @inject IJSRuntime JSRuntime
+@inject GameStateService GameStateService
 
 <canvas id="gameCanvas" width="800" height="600"></canvas>
 
 @code {
+
+    [Parameter]
+    public Guid WorldId { get; set; }
+
+    override protected async Task OnInitializedAsync()
+    {
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-
         if (firstRender)
         {
             //GameStateService.StateChanged += (sender, e) => InvokeAsync(() => StateHasChanged());
-
             timer = new Timer();
             timer.Interval = 30;
             timer.Elapsed += UpdateUi;
@@ -38,22 +44,14 @@
 
     private async Task DrawGameState()
     {
-        var state = GameStateService.Freeze();
+        var state = GameStateService.GetGameState(WorldId);
         await Draw(state);
-        @* await ClearCanvas();
-        foreach (var drone in state.Drones)
-        {
-            await DrawDrone(drone);
-        }
-        foreach (var shot in state.Shots)
-        {
-            await DrawShot(shot);
-        } *@
-        GameStateService.RemoveDrawnShots();
+        GameStateService.RemoveShots(WorldId);
     }
 
 
-    private async Task Draw(GameStateService state) => await JSRuntime.InvokeVoidAsync("draw", state);
+    private async Task Draw(GameState state) => await JSRuntime.InvokeVoidAsync("draw", state);
+    /*
     private async Task ClearCanvas() => await JSRuntime.InvokeVoidAsync("clearCanvas");
     private async Task DrawDrone(Drone drone) => await JSRuntime.InvokeVoidAsync("drawDrone", drone.Position.X * 800, drone.Position.Y * 600, drone.Heading.Degrees);
     private async Task DrawShot(DroneShot shot)
@@ -61,4 +59,5 @@
          await JSRuntime.InvokeVoidAsync("drawShot", shot.Shooter.Position.X * 800, shot.Shooter.Position.Y * 600, shot.Target.Position.Y * 800, shot.Target.Position.Y * 600);  
          shot.Drawn = true;
     }
+    */
 }
