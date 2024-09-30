@@ -151,7 +151,7 @@ public class GameState
 
         var shooter = Drones.Find(d => d.DroneId == message.ShootingDroneId);
         var target = Drones.Find(d => d.DroneId == message.TargetDroneId);
-        Shots.Add(new DroneShot { Shooter = shooter, Target = target });
+        Shots.Add(new DroneShot { Shooter = shooter, Target = target, Cycles = 0 });
 
         StateChanged?.Invoke(this, EventArgs.Empty);
     }
@@ -170,7 +170,12 @@ public class GameState
 
     internal void RemoveDrawnShots()
     {
-        Shots.Clear();
+        foreach (var shot in Shots)
+        {
+            shot.Cycles++;
+        }
+
+        Shots.RemoveAll(s => s.Cycles > 10);
     }
 
     internal GameState Freeze()

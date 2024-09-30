@@ -7,5 +7,5 @@ public record DroneShot
     public Drone Shooter { get; set; }
     public Drone Target { get; set; }
 
-    public bool Drawn { get; set; }
+    public int Cycles { get; set; }
 }

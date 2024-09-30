@@ -12,10 +12,13 @@
 @code {
 
     [Parameter]
-    public Guid WorldId { get; set; }
+    public string WorldId { get; set; }
+    public Guid WorldIdGuid { get; set; }   
+
 
     override protected async Task OnInitializedAsync()
     {
+        WorldIdGuid = Guid.Parse(WorldId);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -44,9 +47,10 @@
 
     private async Task DrawGameState()
     {
-        var state = GameStateService.GetGameState(WorldId);
+        var state = GameStateService.GetGameState(WorldIdGuid);
+        Console.WriteLine(state.Shots.Count);   
         await Draw(state);
-        GameStateService.RemoveShots(WorldId);
+        GameStateService.RemoveShots(WorldIdGuid);
     }
 
 
