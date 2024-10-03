@@ -9,13 +9,15 @@
 
 <canvas id="gameCanvas" width="800" height="600"></canvas>
 
+<br />
+
+Highlight drone: <input id="highligtedDroneId" type="text"  />
+
 @code {
 
     [Parameter]
     public string WorldId { get; set; }
     public Guid WorldIdGuid { get; set; }   
-
-
     override protected async Task OnInitializedAsync()
     {
         WorldIdGuid = Guid.Parse(WorldId);

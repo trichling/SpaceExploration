@@ -11,6 +11,22 @@ public class Drone
     public Drone(Guid droneId)
     {
         DroneId = droneId;
+        DroneType = "Default";
+        DroneName = $"{DroneType}-{droneId.ToString()}";
+    }
+
+    public Drone(Guid droneId, string droneType)
+    {
+        DroneId = droneId;
+        DroneType = droneType;
+        DroneName = $"{droneType}-{droneId.ToString()}";
+    }
+
+    public Drone(Guid droneId, string droneType, string droneName)
+    {
+        DroneId = droneId;
+        DroneType = droneType;
+        DroneName = droneName;
     }
 
     public Drone(Guid droneId, Coordinate position, Angle heading) : this(droneId)
@@ -26,7 +42,9 @@ public class Drone
         Health = health;
     }
 
-    public Guid DroneId { get; set; } 
+    public Guid DroneId { get; set; }
+    public string DroneType { get; set; }
+    public string DroneName { get; set; }
 
     public readonly int FieldOvView = 45;
     public readonly double ScanDistance = 0.1;

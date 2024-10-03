@@ -36,10 +36,10 @@ public class Planet : Saga<PlanetData>
             return;
         }
 
-        var drone = new Drone(message.DroneId);
-        Data.Drones.Add(drone);   
+        var drone = new Drone(message.DroneId, message.DroneType, message.DroneName);
+        Data.Drones.Add(drone);
 
-        await context.Publish(new Events.DroneDropped(Data.PlanetId, drone.DroneId, drone.Position.X, drone.Position.Y, drone.Heading.Degrees, Data.Drones.Count));
+        await context.Publish(new Events.DroneDropped(Data.PlanetId, drone.DroneId, drone.DroneType, drone.DroneName, drone.Position.X, drone.Position.Y, drone.Heading.Degrees, Data.Drones.Count));
     }
 
     public async Task Handle(ScanEnvironment message, IMessageHandlerContext context)
@@ -49,7 +49,7 @@ public class Planet : Saga<PlanetData>
         if (drone is null)
         {
             return;
-        }   
+        }
 
         var visibleDrones = EnvironmentalScan.ScanEnvironment(drone, Data.Drones);
         var sensorReadings = visibleDrones.Select(d => new SensorReading(Guid.NewGuid(), d.Drone.DroneId, d.Distance, d.Angle)).ToList();
@@ -131,15 +131,15 @@ public class Planet : Saga<PlanetData>
     public async Task Handle(Move message, IMessageHandlerContext context)
     {
         var drone = Data.Drones.Single(d => d.DroneId == message.DroneId);
-        
+
         var x = drone.Position.X + Math.Cos(drone.Heading.Radians) * drone.MoveDistance;
         var y = drone.Position.Y + Math.Sin(drone.Heading.Radians) * drone.MoveDistance;
 
         if (x > 1)
-            x = x-1;
+            x = x - 1;
 
         if (y > 1)
-            y = y-1;
+            y = y - 1;
 
         if (x < 0)
             x = 1 - Math.Abs(x);
@@ -173,7 +173,7 @@ public class PlanetData : ContainSagaData
 
     public Dictionary<Guid, List<SensorReading>> SensorReadings { get; set; } = new Dictionary<Guid, List<SensorReading>>();
 
-    
+
 }
 
 public record SensorReading(Guid ReadingId, Guid DroneId, double Distance, double Angle);

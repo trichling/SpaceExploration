@@ -13,8 +13,10 @@
 
         window.draw = (state) => {
             clearCanvas();
-            state.drones.forEach(drone => drawDrone(drone.position.x * 800, drone.position.y * 600, drone.heading.degrees));
-            state.shots.forEach(shot => drawShot(shot.shooter.position.x * 800, shot.shooter.position.y * 600, shot.target.position.x * 800, shot.target.position.y * 600));
+            // get the text of the input field highligtedDroneId
+            const highligtedDroneId = document.getElementById('highligtedDroneId').value;
+            state.drones.forEach(drone => drawDrone(drone, highligtedDroneId));
+            state.shots.forEach(shot => drawShot(shot));
         }
 
         window.clearCanvas = () => {
@@ -23,29 +25,51 @@
             context.clearRect(0, 0, canvas.width, canvas.height);
         };
 
-        window.drawDrone = (x, y, heading) => {
+        window.drawDrone = (drone, highligtedDroneId) => {
+            console.log(drone);
+            const x = drone.position.x * 800;
+            const y = drone.position.y * 600;
+            const heading = drone.heading.degrees;
             const canvas = document.getElementById('gameCanvas');
             const context = canvas.getContext('2d');
             context.save();
             context.translate(x, y);
+
+            if (drone.droneId === highligtedDroneId) {
+                context.fillStyle = 'green';
+                context.scale(2, 2);
+            }
+            else {
+                context.fillStyle = 'blue';
+            }
+
             context.rotate(heading * Math.PI / 180);
             context.beginPath();
             context.moveTo(0, -5);
             context.lineTo(5, 5);
             context.lineTo(-5, 5);
             context.closePath();
-            context.fillStyle = 'red';
             context.fill();
+
             context.restore();
+
+            @* context.font = '10px Arial';
+            context.fillStyle = 'black';
+            context.fillText(drone.droneName.substring(0, 10), -10, -10); *@
+
         };
 
-        window.drawShot = (fromX, fromY, toX, toY) => {
+        window.drawShot = (shot) => {
+            const fromX = shot.shooter.position.x * 800;
+            const fromY = shot.shooter.position.y * 600;
+            const toX = shot.target.position.x * 800;
+            const toY = shot.target.position.y * 600;
             const canvas = document.getElementById('gameCanvas');
             const context = canvas.getContext('2d');
             context.beginPath();
             context.moveTo(fromX, fromY);
             context.lineTo(toX, toY);
-            context.strokeStyle = 'blue';
+            context.strokeStyle = 'red';
             context.stroke();
         };
 
