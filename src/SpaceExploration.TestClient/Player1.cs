@@ -6,7 +6,7 @@ namespace SpaceExploration.TestClient;
 
 public class Player1 : BackgroundService
 {
-    public static Guid PlanetId = Guid.NewGuid(); // new Guid("699BBD37-1719-4942-AC03-5917FF851BA4");
+    public static Guid PlanetId = new Guid("d867398f-3bd8-47b8-93da-35ca95c3dd05");
     public static Guid Player1Id = Guid.NewGuid();
     public static Guid Drone1Id = Guid.NewGuid();
     private readonly ILogger<Player1> _logger;
@@ -20,7 +20,7 @@ public class Player1 : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        await _messageSession.Send(new CreatePlanet(PlanetId, "Earth"));
+        await _messageSession.Send(new DropDrone(Player1.Drone1Id, Player1.PlanetId));
 
         while (!stoppingToken.IsCancellationRequested)
         {
@@ -28,25 +28,6 @@ public class Player1 : BackgroundService
         }
     }
 }
-
-public class PlanetCreatedHandler : IHandleMessages<PlanetCreated>
-{
-    public async Task Handle(PlanetCreated message, IMessageHandlerContext context)
-    {
-        if (message.PlanetId != Player1.PlanetId)
-        {
-            return;
-        }
-
-        await context.Send(new DropDrone(Player1.Drone1Id, Player1.PlanetId));
-
-        for (var i = 0; i < 90; i++)
-        {
-            await context.Send(new DropDrone(Guid.NewGuid(), Player1.PlanetId));
-        }
-
-    }
-}	
 
 public class DroneDroppedHandler : IHandleMessages<DroneDropped>
 {
