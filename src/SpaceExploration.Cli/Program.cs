@@ -3,7 +3,9 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-using SpaceExploration.Game.Contracts.Commands;
+using SpaceExploration.Game.Contracts.Drones.Commands;
+using SpaceExploration.Game.Contracts.Planets.Commands;
+
 
 var configuration = new ConfigurationBuilder()
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
@@ -20,6 +22,7 @@ transport.SubscriptionRuleNamingConvention(type => type.Name);
 
 var routing = transport.Routing();
 routing.RouteToEndpoint(typeof(CreatePlanet).Assembly, "SpaceExploration.Game");
+routing.RouteToEndpoint(typeof(Move).Assembly, "SpaceExploration.Game");
 
 var conventions = endpointConfiguration.Conventions();
 conventions.DefiningCommandsAs(t => t.Namespace != null && t.Namespace.EndsWith("Commands"));

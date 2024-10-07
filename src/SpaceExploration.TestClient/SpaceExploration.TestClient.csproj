@@ -18,6 +18,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SpaceExploration.Game.Contracts\SpaceExploration.Game.Contracts.csproj" />
+    <ProjectReference Include="..\SpaceExploration.Game.Contracts.Drones\SpaceExploration.Game.Contracts.Drones.csproj" />
   </ItemGroup>
 </Project>

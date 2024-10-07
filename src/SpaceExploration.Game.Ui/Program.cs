@@ -1,5 +1,7 @@
 using Microsoft.Data.SqlClient;
-using SpaceExploration.Game.Contracts.Commands;
+
+using SpaceExploration.Game.Contracts.Drones.Commands;
+using SpaceExploration.Game.Contracts.Planets.Commands;
 using SpaceExploration.Game.Ui;
 using SpaceExploration.Game.Ui.Components;
 
@@ -10,7 +12,7 @@ builder.Configuration.AddUserSecrets<Program>();
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddSingleton<GameStateService>();  
+builder.Services.AddSingleton<GameStateService>();
 
 var endpointConfiguration = new EndpointConfiguration("SpaceExploration.Ui");
 // var persistence = endpointConfiguration.UsePersistence<LearningPersistence>();
@@ -31,8 +33,9 @@ var transport = endpointConfiguration.UseTransport<AzureServiceBusTransport>();
 transport.ConnectionString(builder.Configuration["ConnectionStrings:AzureServiceBus"]);
 transport.SubscriptionRuleNamingConvention(type => type.Name);
 
-var routing = transport.Routing();  
+var routing = transport.Routing();
 routing.RouteToEndpoint(typeof(CreatePlanet).Assembly, "SpaceExploration.Game");
+routing.RouteToEndpoint(typeof(Move).Assembly, "SpaceExploration.Game");
 
 var conventions = endpointConfiguration.Conventions();
 conventions.DefiningCommandsAs(t => t.Namespace != null && t.Namespace.EndsWith("Commands"));

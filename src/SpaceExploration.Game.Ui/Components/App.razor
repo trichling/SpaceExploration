@@ -29,7 +29,7 @@
             console.log(drone);
             const x = drone.position.x * 800;
             const y = drone.position.y * 600;
-            const heading = drone.heading.degrees;
+            const heading = drone.heading.radians;
             const canvas = document.getElementById('gameCanvas');
             const context = canvas.getContext('2d');
             context.save();
@@ -43,9 +43,9 @@
                 context.fillStyle = 'blue';
             }
 
-            context.rotate(heading * Math.PI / 180);
+            context.rotate(heading);
             context.beginPath();
-            context.moveTo(0, -5);
+            context.moveTo(0, -10);
             context.lineTo(5, 5);
             context.lineTo(-5, 5);
             context.closePath();

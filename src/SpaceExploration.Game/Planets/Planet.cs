@@ -1,7 +1,8 @@
-using SpaceExploration.Game.Contracts.Commands;
-using SpaceExploration.Game.Contracts.Events;
-using SpaceExploration.Game.Contracts.Messages;
-using SpaceExploration.Game.Events;
+using SpaceExploration.Game.Contracts.Planets.Commands;
+using SpaceExploration.Game.Contracts.Drones.Commands;
+using SpaceExploration.Game.Contracts.Drones.Events;
+using SpaceExploration.Game.Contracts.Drones.Messages;
+using SpaceExploration.Game.Contracts.Planets.Events;
 
 namespace SpaceExploration.Game.Planets;
 
@@ -39,7 +40,7 @@ public class Planet : Saga<PlanetData>
         var drone = new Drone(message.DroneId, message.DroneType, message.DroneName);
         Data.Drones.Add(drone);
 
-        await context.Publish(new Events.DroneDropped(Data.PlanetId, drone.DroneId, drone.DroneType, drone.DroneName, drone.Position.X, drone.Position.Y, drone.Heading.Degrees, Data.Drones.Count));
+        await context.Publish(new Contracts.Planets.Events.DroneDropped(Data.PlanetId, drone.DroneId, drone.DroneType, drone.DroneName, drone.Position.X, drone.Position.Y, drone.Heading.Degrees, Data.Drones.Count));
     }
 
     public async Task Handle(ScanEnvironment message, IMessageHandlerContext context)

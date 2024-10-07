@@ -1,6 +1,7 @@
 namespace SpaceExploration.Game.Ui;
 
-using SpaceExploration.Game.Events;
+using SpaceExploration.Game.Contracts.Drones.Events;
+using SpaceExploration.Game.Contracts.Planets.Events;
 using SpaceExploration.Game.Planets;
 
 public class GameState
@@ -26,7 +27,7 @@ public class GameState
         Shots = shots;
     }
 
-    public void HandleDroneDropped(DroneDropped message)
+    public void HandleDroneDropped(Contracts.Planets.Events.DroneDropped message)
     {
 
         Console.WriteLine(Drones.Count);
@@ -80,7 +81,7 @@ public class GameState
         StateChanged?.Invoke(this, EventArgs.Empty);
     }
 
-    internal void HandleDroneHit(Contracts.Events.DroneHit message)
+    internal void HandleDroneHit(DroneHit message)
     {
 
         if (!Drones.Exists(d => d.DroneId == message.ShootingDroneId))
@@ -108,7 +109,7 @@ public class GameState
         StateChanged?.Invoke(this, EventArgs.Empty);
     }
 
-    internal void HandleDroneDestroyed(Contracts.Events.DroneDestroyed message)
+    internal void HandleDroneDestroyed(DroneDestroyed message)
     {
 
         var drone = Drones.Find(d => d.DroneId == message.DroneId);

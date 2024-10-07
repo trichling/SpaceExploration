@@ -1,9 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+
 using NServiceBus.Testing;
-using SpaceExploration.Game.Contracts.Commands;
-using SpaceExploration.Game.Contracts.Events;
-using SpaceExploration.Game.Contracts.Messages;
+
+using SpaceExploration.Game.Contracts.Drones.Events;
+using SpaceExploration.Game.Contracts.Planets.Commands;
 using SpaceExploration.Game.Planets;
 
 namespace SpaceExploration.Game.Tests;
@@ -61,5 +62,5 @@ public class Planet_CreatePlanet_Tests
         Assert.NotNull(publishedMessage);
         Assert.Equal(message.PlanetId, publishedMessage.PlanetId);
     }
-    
+
 }

@@ -1,14 +1,13 @@
-using SpaceExploration.Game.Contracts.Commands;
-using SpaceExploration.Game.Contracts.Events;
-using SpaceExploration.Game.Contracts.Messages;
+using SpaceExploration.Game.Contracts.Drones.Commands;
+using SpaceExploration.Game.Contracts.Drones.Events;
+using SpaceExploration.Game.Contracts.Drones.Messages;
 
 namespace SpaceExploration.TestClient;
 
 public class Player1 : BackgroundService
 {
-    public static Guid PlanetId = new Guid("d867398f-3bd8-47b8-93da-35ca95c3dd05");
-    public static Guid Player1Id = Guid.NewGuid();
-    public static Guid Drone1Id = Guid.NewGuid();
+    public static Guid PlanetId = new Guid("297a732c-1327-43a2-8000-786ed957e68d");
+    public static Guid Drone1Id = new Guid("4bd29f7e-5626-4f7f-a82c-152026e1cc55");
     private readonly ILogger<Player1> _logger;
     private readonly IMessageSession _messageSession;
 
@@ -20,7 +19,10 @@ public class Player1 : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        await _messageSession.Send(new DropDrone(Player1.Drone1Id, Player1.PlanetId));
+        Console.WriteLine("Hit enter if drone was dropped");
+        Console.ReadLine();
+
+        await _messageSession.Send(new ScanEnvironment(Player1.Drone1Id, Player1.PlanetId));
 
         while (!stoppingToken.IsCancellationRequested)
         {
@@ -39,7 +41,6 @@ public class DroneDroppedHandler : IHandleMessages<DroneDropped>
         if (message.DroneId == Player1.Drone1Id)
         {
             Console.WriteLine("Player 1 Drone dropped: {0}", message.DroneId);
-            await context.Send(new ScanEnvironment(Player1.Drone1Id, Player1.PlanetId));
         }
     }
 }

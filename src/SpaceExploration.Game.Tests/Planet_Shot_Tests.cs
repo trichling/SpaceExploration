@@ -1,9 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+
 using NServiceBus.Testing;
-using SpaceExploration.Game.Contracts.Commands;
-using SpaceExploration.Game.Contracts.Events;
-using SpaceExploration.Game.Contracts.Messages;
+
+using SpaceExploration.Game.Contracts.Drones.Commands;
+using SpaceExploration.Game.Contracts.Drones.Events;
 using SpaceExploration.Game.Planets;
 
 namespace SpaceExploration.Game.Tests;
@@ -43,10 +44,10 @@ public class Planet_Shot_Tests
                 },
                 SensorReadings = new Dictionary<Guid, List<SensorReading>>()
                 {
-                    { scanningDrone, new List<SensorReading>() 
+                    { scanningDrone, new List<SensorReading>()
                         {
                             new SensorReading(readingId, visibleDroneId, 0.05, 0)
-                        } 
+                        }
                     }
                 }
             }
@@ -80,10 +81,10 @@ public class Planet_Shot_Tests
                 },
                 SensorReadings = new Dictionary<Guid, List<SensorReading>>()
                 {
-                    { scanningDrone, new List<SensorReading>() 
+                    { scanningDrone, new List<SensorReading>()
                         {
                             new SensorReading(readingId, visibleDroneId, 0.05, 0)
-                        } 
+                        }
                     }
                 }
             }
@@ -119,10 +120,10 @@ public class Planet_Shot_Tests
                 },
                 SensorReadings = new Dictionary<Guid, List<SensorReading>>()
                 {
-                    { scanningDrone, new List<SensorReading>() 
+                    { scanningDrone, new List<SensorReading>()
                         {
                             new SensorReading(readingId, visibleDroneId, 0.05, 0)
-                        } 
+                        }
                     }
                 }
             }
@@ -157,10 +158,10 @@ public class Planet_Shot_Tests
                 },
                 SensorReadings = new Dictionary<Guid, List<SensorReading>>()
                 {
-                    { scanningDrone, new List<SensorReading>() 
+                    { scanningDrone, new List<SensorReading>()
                         {
                             new SensorReading(readingId, visibleDroneId, 0.05, 0)
-                        } 
+                        }
                     }
                 }
             }
@@ -175,5 +176,5 @@ public class Planet_Shot_Tests
         Assert.Equal(planetId, droneDestroyedEvent.PlanetId);
         Assert.Equal(visibleDroneId, droneDestroyedEvent.DroneId);
     }
- 
+
 }

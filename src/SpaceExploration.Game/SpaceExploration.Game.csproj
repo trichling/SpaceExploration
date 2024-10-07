@@ -1,23 +1,25 @@
 <Project Sdk="Microsoft.NET.Sdk.Worker">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>dotnet-SpaceExploration.Game-5e8f27c7-961a-43f4-8d08-10c2386ee8c5</UserSecretsId>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <UserSecretsId>dotnet-SpaceExploration.Game-5e8f27c7-961a-43f4-8d08-10c2386ee8c5</UserSecretsId>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.1" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
-    <PackageReference Include="NServiceBus" Version="9.1.1" />
-    <PackageReference Include="NServiceBus.Extensions.Hosting" Version="3.0.0" />
-    <PackageReference Include="NServiceBus.Persistence.NonDurable" Version="2.0.0" />
-    <PackageReference Include="NServiceBus.Persistence.Sql" Version="8.1.0" />
-    <PackageReference Include="NServiceBus.Transport.AzureServiceBus" Version="4.2.0" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.1" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+        <PackageReference Include="NServiceBus" Version="9.1.1" />
+        <PackageReference Include="NServiceBus.Extensions.Hosting" Version="3.0.0" />
+        <PackageReference Include="NServiceBus.Persistence.NonDurable" Version="2.0.0" />
+        <PackageReference Include="NServiceBus.Persistence.Sql" Version="8.1.0" />
+        <PackageReference Include="NServiceBus.Transport.AzureServiceBus" Version="4.2.0" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\SpaceExploration.Game.Contracts\SpaceExploration.Game.Contracts.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\SpaceExploration.Game.Contracts.Drones\SpaceExploration.Game.Contracts.Drones.csproj" />
+        <ProjectReference Include="..\SpaceExploration.Game.Contracts.Planets\SpaceExploration.Game.Contracts.Planets.csproj" />
+
+    </ItemGroup>
 </Project>

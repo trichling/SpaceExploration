@@ -1,7 +1,7 @@
 using CliFx.Attributes;
 using CliFx.Infrastructure;
 
-using SpaceExploration.Game.Contracts.Commands;
+using SpaceExploration.Game.Contracts.Planets.Commands;
 
 using ICommand = CliFx.ICommand;
 

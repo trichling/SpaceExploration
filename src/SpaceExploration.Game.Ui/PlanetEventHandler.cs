@@ -1,11 +1,11 @@
-using SpaceExploration.Game.Contracts.Events;
-using SpaceExploration.Game.Events;
+using SpaceExploration.Game.Contracts.Drones.Events;
+using SpaceExploration.Game.Contracts.Planets.Events;
 
 namespace SpaceExploration.Game.Ui;
 
 public class PlanetEventHandler : Saga<PlanetEventHandlerData>,
     IAmStartedByMessages<PlanetCreated>,
-    IAmStartedByMessages<Events.DroneDropped>,
+    IAmStartedByMessages<Contracts.Planets.Events.DroneDropped>,
     IAmStartedByMessages<DroneTurned>,
     IAmStartedByMessages<DroneMoved>,
     IAmStartedByMessages<DroneHit>,
@@ -21,11 +21,11 @@ public class PlanetEventHandler : Saga<PlanetEventHandlerData>,
 
     public Task Handle(PlanetCreated message, IMessageHandlerContext context)
     {
-         Data.PlanetId = message.PlanetId;
+        Data.PlanetId = message.PlanetId;
         return Task.CompletedTask;
     }
 
-    public Task Handle(Events.DroneDropped message, IMessageHandlerContext context)
+    public Task Handle(Contracts.Planets.Events.DroneDropped message, IMessageHandlerContext context)
     {
         Data.PlanetId = message.PlanetId;
 
@@ -70,7 +70,7 @@ public class PlanetEventHandler : Saga<PlanetEventHandlerData>,
     {
         mapper.MapSaga(saga => saga.PlanetId)
             .ToMessage<PlanetCreated>(msg => msg.PlanetId)
-            .ToMessage<Events.DroneDropped>(msg => msg.PlanetId)
+            .ToMessage<Contracts.Planets.Events.DroneDropped>(msg => msg.PlanetId)
             .ToMessage<DroneTurned>(msg => msg.PlanetId)
             .ToMessage<DroneMoved>(msg => msg.PlanetId)
             .ToMessage<DroneHit>(msg => msg.PlanetId)

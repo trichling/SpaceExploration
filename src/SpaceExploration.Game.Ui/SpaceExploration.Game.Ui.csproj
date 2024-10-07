@@ -2,7 +2,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SpaceExploration.Game\SpaceExploration.Game.csproj" />
-    <ProjectReference Include="..\SpaceExploration.Game.Contracts\SpaceExploration.Game.Contracts.csproj" />
   </ItemGroup>
 
   <ItemGroup>

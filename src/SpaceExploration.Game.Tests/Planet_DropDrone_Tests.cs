@@ -1,8 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NServiceBus.Testing;
-using SpaceExploration.Game.Contracts.Commands;
-using SpaceExploration.Game.Contracts.Events;
+
+using SpaceExploration.Game.Contracts.Planets.Commands;
+using SpaceExploration.Game.Contracts.Planets.Events;
 using SpaceExploration.Game.Planets;
 
 namespace SpaceExploration.Game.Tests;
@@ -87,7 +88,7 @@ public class Planet_DropDrone_Tests
         var message = new DropDrone(droneId, planetId);
         await saga.Handle(message, context);
 
-        var droneDroppedGame = context.PublishedMessages.Single().Message as Events.DroneDropped;
+        var droneDroppedGame = context.PublishedMessages.Single().Message as DroneDropped;
 
         Assert.NotNull(droneDroppedGame);
         Assert.Equal(message.PlanetId, droneDroppedGame.PlanetId);

@@ -1,6 +1,8 @@
 namespace SpaceExploration.Game.Ui;
 
-using SpaceExploration.Game.Events;
+using SpaceExploration.Game.Contracts.Drones.Events;
+using SpaceExploration.Game.Contracts.Planets.Events;
+
 using System.Collections.Concurrent; // Add this using directive
 
 public class GameStateService
@@ -13,7 +15,7 @@ public class GameStateService
         return gameState.Freeze();
     }
 
-    public void HandleDroneDropped(DroneDropped message)
+    public void HandleDroneDropped(Contracts.Planets.Events.DroneDropped message)
     {
         var gameState = gameStates.GetOrAdd(message.PlanetId, new GameState(message.PlanetId));
         gameState.HandleDroneDropped(message);
@@ -31,13 +33,13 @@ public class GameStateService
         gameState.HandleDroneMoved(message);
     }
 
-    internal void HandleDroneHit(Contracts.Events.DroneHit message)
+    internal void HandleDroneHit(DroneHit message)
     {
         var gameState = gameStates.GetOrAdd(message.PlanetId, new GameState(message.PlanetId));
         gameState.HandleDroneHit(message);
     }
 
-    internal void HandleDroneDestroyed(Contracts.Events.DroneDestroyed message)
+    internal void HandleDroneDestroyed(DroneDestroyed message)
     {
         var gameState = gameStates.GetOrAdd(message.PlanetId, new GameState(message.PlanetId));
         gameState.HandleDroneDestroyed(message);

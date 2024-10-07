@@ -1,8 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+
 using NServiceBus.Testing;
-using SpaceExploration.Game.Contracts.Commands;
-using SpaceExploration.Game.Contracts.Messages;
+
+using SpaceExploration.Game.Contracts.Drones.Commands;
+using SpaceExploration.Game.Contracts.Drones.Messages;
 using SpaceExploration.Game.Planets;
 
 namespace SpaceExploration.Game.Tests;
@@ -23,7 +25,7 @@ public class Planet_ScanEnvironment_Tests
     }
 
 
-  [Fact]
+    [Fact]
     public async Task ScanEnvironment_CreatesADroneReadingInTheSagaAndReturnsItWithoutTheDroneId()
     {
         var planetId = Guid.NewGuid();
@@ -41,7 +43,7 @@ public class Planet_ScanEnvironment_Tests
                     // Out of view
                     new Drone(Guid.NewGuid(), new Coordinate(0.6, 0.6), new Angle(0)),
 
-                }   
+                }
             }
         };
 
@@ -50,14 +52,14 @@ public class Planet_ScanEnvironment_Tests
 
         await saga.Handle(message, context);
 
-        var scanResult = (ScanEnvironmentResult) context.RepliedMessages.Single().Message;
+        var scanResult = (ScanEnvironmentResult)context.RepliedMessages.Single().Message;
         Assert.Single(scanResult.SensorReadings);
         var droneReading = scanResult.SensorReadings.Single();
         Assert.Equal(0, droneReading.Heading);
 
         Assert.True(saga.Data.SensorReadings.ContainsKey(scanningDrone));
         var sensorReading = saga.Data.SensorReadings[scanningDrone].Single();
-        Assert.Equal(visibleDroneId, sensorReading.DroneId);    
+        Assert.Equal(visibleDroneId, sensorReading.DroneId);
         Assert.Equal(sensorReading.ReadingId, droneReading.ReadingId);
     }
 

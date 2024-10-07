@@ -1,4 +1,4 @@
-namespace SpaceExploration.Game.Contracts.Messages;
+namespace SpaceExploration.Game.Contracts.Drones.Messages;
 
 public record ScanEnvironmentResult(Guid DroneId, List<DroneReading> SensorReadings);
 

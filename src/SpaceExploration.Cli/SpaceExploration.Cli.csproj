@@ -19,7 +19,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SpaceExploration.Game.Contracts\SpaceExploration.Game.Contracts.csproj" />
+    <ProjectReference Include="..\SpaceExploration.Game.Contracts.Planets\SpaceExploration.Game.Contracts.Planets.csproj" />
+    <ProjectReference Include="..\SpaceExploration.Game.Contracts.Drones\SpaceExploration.Game.Contracts.Drones.csproj" />
+
   </ItemGroup>
 
   <ItemGroup>

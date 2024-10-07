@@ -1,8 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+
 using NServiceBus.Testing;
-using SpaceExploration.Game.Contracts.Commands;
-using SpaceExploration.Game.Contracts.Messages;
+
+using SpaceExploration.Game.Contracts.Drones.Commands;
+using SpaceExploration.Game.Contracts.Planets.Events;
 using SpaceExploration.Game.Planets;
 
 namespace SpaceExploration.Game.Tests;
@@ -36,11 +38,11 @@ public class Planet_Movement_Tests
                 {
                     new Drone(droneId, new Coordinate(0.5, 0.5), new Angle(180)),
 
-                }   
+                }
             }
         };
 
-        var context = new TestableMessageHandlerContext();  
+        var context = new TestableMessageHandlerContext();
         var message = new Turn(planetId, droneId, 90);
 
         await saga.Handle(message, context);
@@ -63,16 +65,16 @@ public class Planet_Movement_Tests
                 {
                     new Drone(droneId, new Coordinate(0.5, 0.5), new Angle(180)),
 
-                }   
+                }
             }
         };
 
-        var context = new TestableMessageHandlerContext();  
+        var context = new TestableMessageHandlerContext();
         var message = new Turn(planetId, droneId, 90);
 
         await saga.Handle(message, context);
 
-        var publisedMessages = context.PublishedMessages.Single().Message as Events.DroneTurned;
+        var publisedMessages = context.PublishedMessages.Single().Message as DroneTurned;
 
         Assert.Equal(270, publisedMessages.Heading);
         Assert.Equal(droneId, publisedMessages.DroneId);
@@ -92,11 +94,11 @@ public class Planet_Movement_Tests
                 {
                     new Drone(droneId, new Coordinate(0.5, 0.5), new Angle(180)),
 
-                }   
+                }
             }
         };
 
-        var context = new TestableMessageHandlerContext();  
+        var context = new TestableMessageHandlerContext();
         var message = new Move(planetId, droneId);
 
         await saga.Handle(message, context);
@@ -119,16 +121,16 @@ public class Planet_Movement_Tests
                 {
                     new Drone(droneId, new Coordinate(0.5, 0.5), new Angle(180)),
 
-                }   
+                }
             }
         };
 
-        var context = new TestableMessageHandlerContext();  
+        var context = new TestableMessageHandlerContext();
         var message = new Move(planetId, droneId);
 
         await saga.Handle(message, context);
 
-        var publisedMessages = context.PublishedMessages.Single().Message as Events.DroneMoved;
+        var publisedMessages = context.PublishedMessages.Single().Message as DroneMoved;
 
         Assert.Equal(0.4, publisedMessages.X);
         Assert.Equal(0.5, publisedMessages.Y);
