@@ -2,7 +2,7 @@ using SpaceExploration.Game.Contracts.Drones.Commands;
 using SpaceExploration.Game.Contracts.Drones.Events;
 using SpaceExploration.Game.Contracts.Drones.Messages;
 
-namespace SpaceExploration.TestClient;
+namespace SpaceExploration.Player;
 
 public class Player : BackgroundService
 {
@@ -95,8 +95,7 @@ public class ShotResultHandler : IHandleMessages<DroneHit>,
     {
         _logger.LogInformation("Drone destroyed: {0}", message.DroneId);
 
-        if (message.DroneId.Equals(Player.Drone1Id))
-            await context.Send(new ScanEnvironment(Player.Drone1Id, Player.PlanetId));
+        await context.Send(new ScanEnvironment(Player.Drone1Id, Player.PlanetId));
     }
 
     public async Task Handle(MoveResult message, IMessageHandlerContext context)

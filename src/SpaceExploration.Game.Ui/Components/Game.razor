@@ -31,7 +31,7 @@ Highlight drone: <input id="highligtedDroneId" type="text"  />
         {
             //GameStateService.StateChanged += (sender, e) => InvokeAsync(() => StateHasChanged());
             timer = new Timer();
-            timer.Interval = 30;
+            timer.Interval = 500;
             timer.Elapsed += UpdateUi;
             timer.AutoReset = true;
             // Start the timer
@@ -54,7 +54,6 @@ Highlight drone: <input id="highligtedDroneId" type="text"  />
     private async Task DrawGameState()
     {
         var state = GameStateService.GetGameState(WorldIdGuid);
-        Console.WriteLine(state.Shots.Count);   
         await Draw(state);
         GameStateService.RemoveShots(WorldIdGuid);
     }

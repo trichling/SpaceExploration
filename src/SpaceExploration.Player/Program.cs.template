@@ -1,7 +1,7 @@
 using Microsoft.Data.SqlClient;
 
 using SpaceExploration.Game.Contracts.Drones.Commands;
-using SpaceExploration.TestClient;
+using SpaceExploration.Player;
 
 var builder = Host.CreateApplicationBuilder(args);
 builder.Configuration.AddUserSecrets<Program>();

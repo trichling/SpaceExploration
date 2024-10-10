@@ -2,7 +2,7 @@ using SpaceExploration.Game.Contracts.Drones.Commands;
 using SpaceExploration.Game.Contracts.Drones.Events;
 using SpaceExploration.Game.Contracts.Drones.Messages;
 
-namespace SpaceExploration.TestClient;
+namespace SpaceExploration.Player;
 
 public class Player : BackgroundService
 {

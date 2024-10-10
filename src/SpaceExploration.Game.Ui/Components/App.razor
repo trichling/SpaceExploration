@@ -60,14 +60,14 @@
 
         window.drawShot = (shot) => {
             const fromX = shot.shooter.position.x * 800;
-            const fromY = shot.shooter.position.y * 600;
+            const fromY = (1 - shot.shooter.position.y) * 600;
             const toX = shot.target.position.x * 800;
-            const toY = shot.target.position.y * 600;
+            const toY = (1 - shot.target.position.y) * 600;
             const canvas = document.getElementById('gameCanvas');
             const context = canvas.getContext('2d');
             context.beginPath();
-            context.moveTo(fromX, fromY);
-            context.lineTo(toX, toY);
+            context.moveTo(fromY, fromX);
+            context.lineTo(toY, toX);
             context.strokeStyle = 'red';
             context.stroke();
         };
