@@ -15,11 +15,11 @@ dotnet user-secrets set "ConnectionStrings:Persistence" "$PersistenceConnectionS
 dotnet user-secrets set "ConnectionStrings:Transport" "$TransportConnectionString"
 
 
-(Get-Content "Program.cs") |
+(Get-Content "Program.cs.template") |
         Foreach-Object { $_ -replace "<EndointName>", $EndpointName } |
         Set-Content "Program.cs"
 
-(Get-Content "Player.cs") |
+(Get-Content "Player.cs.template") |
         Foreach-Object { $_ -replace "<PlayerId>", $PlayerId } |
         Foreach-Object { $_ -replace "<PlanetId>", $PlanetId } |
         Set-Content "Player.cs"

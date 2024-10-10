@@ -6,7 +6,7 @@ using SpaceExploration.TestClient;
 var builder = Host.CreateApplicationBuilder(args);
 builder.Configuration.AddUserSecrets<Program>();
 
-var endpointConfiguration = new EndpointConfiguration("SpaceExploration.Player.Tobias");
+var endpointConfiguration = new EndpointConfiguration("<EndointName>");
 
 var persistence = endpointConfiguration.UsePersistence<SqlPersistence>();
 persistence.SqlDialect<SqlDialect.MsSqlServer>();

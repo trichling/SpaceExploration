@@ -6,8 +6,8 @@ namespace SpaceExploration.TestClient;
 
 public class Player : BackgroundService
 {
-    public static Guid PlanetId = new Guid("271c34bf-1a28-432c-b2a0-1374cabd04b9");
-    public static Guid Drone1Id = new Guid("e1d3b1dc-d7be-4351-8b7a-4c613c46403d");
+    public static Guid PlanetId = new Guid("<PlanetId>");
+    public static Guid Drone1Id = new Guid("<PlayerId>");
     private readonly ILogger<Player> _logger;
     private readonly IMessageSession _messageSession;
 
