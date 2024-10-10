@@ -17,7 +17,7 @@ var configuration = new ConfigurationBuilder()
 var endpointConfiguration = new EndpointConfiguration("SpaceExploration.Cli");
 
 var transport = endpointConfiguration.UseTransport<AzureServiceBusTransport>();
-transport.ConnectionString(configuration["ConnectionStrings:AzureServiceBus"]);
+transport.ConnectionString(configuration["ConnectionStrings:Transport"]);
 transport.SubscriptionRuleNamingConvention(type => type.Name);
 
 var routing = transport.Routing();

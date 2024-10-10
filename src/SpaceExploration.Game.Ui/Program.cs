@@ -15,9 +15,7 @@ builder.Services.AddRazorComponents()
 builder.Services.AddSingleton<GameStateService>();
 
 var endpointConfiguration = new EndpointConfiguration("SpaceExploration.Ui");
-// var persistence = endpointConfiguration.UsePersistence<LearningPersistence>();
-// persistence.SagaStorageDirectory("..\\sagas");
-//var persistence = endpointConfiguration.UsePersistence<NonDurablePersistence>();
+
 var persistence = endpointConfiguration.UsePersistence<SqlPersistence>();
 persistence.SqlDialect<SqlDialect.MsSqlServer>();
 persistence.ConnectionBuilder(
@@ -26,11 +24,8 @@ persistence.ConnectionBuilder(
         return new SqlConnection(builder.Configuration["ConnectionStrings:Persistence"]);
     });
 
-// var transport = endpointConfiguration.UseTransport<LearningTransport>();
-// transport.StorageDirectory("..\\transport");
-
 var transport = endpointConfiguration.UseTransport<AzureServiceBusTransport>();
-transport.ConnectionString(builder.Configuration["ConnectionStrings:AzureServiceBus"]);
+transport.ConnectionString(builder.Configuration["ConnectionStrings:Transport"]);
 transport.SubscriptionRuleNamingConvention(type => type.Name);
 
 var routing = transport.Routing();

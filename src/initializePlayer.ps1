@@ -11,8 +11,8 @@ $prevPwd = $PWD; Set-Location -ErrorAction Stop -LiteralPath $PSScriptRoot
 Set-Location -Path .\SpaceExploration.Player
 
 dotnet user-secrets init
-dotnet user-secrets set ConnectionStrings:Persistence "$PersistenceConnectionString"
-dotnet user-secrets set ConnectionStrings:Transport "$TransportConnectionString"
+dotnet user-secrets set "ConnectionStrings:Persistence" "$PersistenceConnectionString"
+dotnet user-secrets set "ConnectionStrings:Transport" "$TransportConnectionString"
 
 
 (Get-Content "Program.cs") |
@@ -22,4 +22,4 @@ dotnet user-secrets set ConnectionStrings:Transport "$TransportConnectionString"
 (Get-Content "Player.cs") |
         Foreach-Object { $_ -replace "<PlayerId>", $PlayerId } |
         Foreach-Object { $_ -replace "<PlanetId>", $PlanetId } |
-        Set-Content "Program.cs"
+        Set-Content "Player.cs"

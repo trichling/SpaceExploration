@@ -24,7 +24,7 @@ persistence.ConnectionBuilder(
     });
 
 var transport = endpointConfiguration.UseTransport<AzureServiceBusTransport>();
-transport.ConnectionString(builder.Configuration["ConnectionStrings:AzureServiceBus"]); 
+transport.ConnectionString(builder.Configuration["ConnectionStrings:Transport"]); 
 transport.SubscriptionRuleNamingConvention(type => type.Name);
 
 var conventions = endpointConfiguration.Conventions();
