@@ -16,7 +16,6 @@
   <ItemGroup>
     <ProjectReference Include="..\SpaceExploration.Game\SpaceExploration.Game.csproj" />
     <ProjectReference Include="..\SpaceExploration.Game.Ui\SpaceExploration.Game.Ui.csproj" />
-    <ProjectReference Include="..\SpaceExploration.TestClient\SpaceExploration.TestClient.csproj" />
   </ItemGroup>
 
 </Project>

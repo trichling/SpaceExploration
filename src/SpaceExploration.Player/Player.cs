@@ -31,20 +31,6 @@ public class Player : BackgroundService
     }
 }
 
-public class DroneDroppedHandler : IHandleMessages<DroneDropped>
-{
-
-    public async Task Handle(DroneDropped message, IMessageHandlerContext context)
-    {
-        Console.WriteLine("Drones dropped: {0}", message.OverallDroneCount);
-
-        if (message.DroneId == Player.Drone1Id)
-        {
-            Console.WriteLine("Player 1 Drone dropped: {0}", message.DroneId);
-        }
-    }
-}
-
 public class ScanResultHandler : IHandleMessages<ScanEnvironmentResult>
 {
     private readonly ILogger<ScanResultHandler> _logger;
@@ -61,13 +47,11 @@ public class ScanResultHandler : IHandleMessages<ScanEnvironmentResult>
         if (message.SensorReadings.Count > 0)
         {
             var firstReading = message.SensorReadings.First();
-            await context.Send(new Shot(Player.PlanetId, Player.Drone1Id, firstReading.ReadingId));
+            //await context.Send(new Shot(Player.PlanetId, Player.Drone1Id, firstReading.ReadingId));
         }
         else
         {
-            await context.Send(new Turn(Player.PlanetId, Player.Drone1Id, new Random().Next(0, 360)));
-            await context.Send(new Move(Player.PlanetId, Player.Drone1Id));
-            await context.Send(new ScanEnvironment(Player.Drone1Id, Player.PlanetId));
+            //await context.Send(new Move(Player.PlanetId, Player.Drone1Id));
         }
     }
 }
@@ -77,14 +61,15 @@ public class LocatePositionHandler : IHandleMessages<LocatePositionResult>
     public Task Handle(LocatePositionResult message, IMessageHandlerContext context)
     {
         Console.WriteLine("Position located: {0}, {1}", message.PositionX, message.PositionY);
-
         return Task.CompletedTask;
     }
 }
 
 public class ShotResultHandler : IHandleMessages<DroneHit>,
     IHandleMessages<DroneMissed>,
-    IHandleMessages<DroneDestroyed>
+    IHandleMessages<DroneDestroyed>,
+    IHandleMessages<MoveResult>,
+    IHandleMessages<TurnResult>
 {
     private readonly ILogger<ShotResultHandler> _logger;
 
@@ -96,23 +81,51 @@ public class ShotResultHandler : IHandleMessages<DroneHit>,
     public async Task Handle(DroneHit message, IMessageHandlerContext context)
     {
         _logger.LogInformation("Drone hit: {0}", message.TargetDroneId);
-
         await context.Send(new ScanEnvironment(Player.Drone1Id, Player.PlanetId));
     }
 
     public async Task Handle(DroneMissed message, IMessageHandlerContext context)
     {
         _logger.LogInformation("Drone missed: {0}", message.DroneId);
-
-        await context.Send(new Move(Player.PlanetId, Player.Drone1Id));
-        await context.Send(new ScanEnvironment(Player.Drone1Id, Player.PlanetId));
+        if (message.DroneId.Equals(Player.Drone1Id))
+            await context.Send(new ScanEnvironment(Player.Drone1Id, Player.PlanetId));
     }
 
     public async Task Handle(DroneDestroyed message, IMessageHandlerContext context)
     {
         _logger.LogInformation("Drone destroyed: {0}", message.DroneId);
 
-        await context.Send(new Move(Player.PlanetId, Player.Drone1Id));
-        await context.Send(new ScanEnvironment(Player.Drone1Id, Player.PlanetId));
+        if (message.DroneId.Equals(Player.Drone1Id))
+            await context.Send(new ScanEnvironment(Player.Drone1Id, Player.PlanetId));
+    }
+
+    public async Task Handle(MoveResult message, IMessageHandlerContext context)
+    {
+        _logger.LogInformation("Drone moved: {0}", message.DroneId);
+        // 30 percent chance to issue a turn command
+        Random random = new Random();
+        if (random.NextDouble() <= 0.3)
+        {
+            await context.Send(new Turn(Player.PlanetId, Player.Drone1Id, 5)); // Example turn command
+        }
+        else
+        {
+            await context.Send(new ScanEnvironment(Player.Drone1Id, Player.PlanetId));
+        }
+    }
+
+    public async Task Handle(TurnResult message, IMessageHandlerContext context)
+    {
+        _logger.LogInformation("Drone turned: {0}", message.DroneId);
+        // 30 percent chance to issue a move command
+        Random random = new Random();
+        if (random.NextDouble() <= 0.3)
+        {
+            await context.Send(new Move(Player.PlanetId, Player.Drone1Id)); // Example turn command
+        }
+        else
+        {
+            await context.Send(new ScanEnvironment(Player.Drone1Id, Player.PlanetId));
+        }
     }
 }

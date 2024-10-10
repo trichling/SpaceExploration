@@ -5,7 +5,7 @@ public class Drone
 
     public Drone()
     {
-        
+
     }
 
     public Drone(Guid droneId)
@@ -37,6 +37,15 @@ public class Drone
 
     public Drone(Guid droneId, Coordinate position, Angle heading, int health) : this(droneId)
     {
+        Position = position;
+        Heading = heading;
+        Health = health;
+    }
+
+    public Drone(Guid droneId, string droneType, string droneName, Coordinate position, Angle heading, int health) : this(droneId)
+    {
+        DroneType = droneType;
+        DroneName = droneName;
         Position = position;
         Heading = heading;
         Health = health;

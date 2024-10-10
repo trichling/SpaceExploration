@@ -1,11 +1,13 @@
 @page "/game/{worldid}"
 @rendermode InteractiveServer
 
+@using SpaceExploration.Game.Contracts.Planets.Commands
 @using SpaceExploration.Game.Planets
 @using System.Timers
 
 @inject IJSRuntime JSRuntime
 @inject GameStateService GameStateService
+@inject IMessageSession MessageSession
 
 <canvas id="gameCanvas" width="800" height="600"></canvas>
 
@@ -34,6 +36,8 @@ Highlight drone: <input id="highligtedDroneId" type="text"  />
             timer.AutoReset = true;
             // Start the timer
             timer.Enabled = true;
+
+            await MessageSession.Send(new CatchUp(WorldIdGuid));
         }
 
         await DrawGameState();
@@ -63,6 +67,7 @@ Highlight drone: <input id="highligtedDroneId" type="text"  />
     private async Task DrawShot(DroneShot shot)
     {
          await JSRuntime.InvokeVoidAsync("drawShot", shot.Shooter.Position.X * 800, shot.Shooter.Position.Y * 600, shot.Target.Position.Y * 800, shot.Target.Position.Y * 600);  
+    using SpaceExploration.Game.Contracts.Planets.Commands;
          shot.Drawn = true;
     }
     */

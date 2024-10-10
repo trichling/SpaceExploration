@@ -1,10 +1,12 @@
 using SpaceExploration.Game.Contracts.Drones.Events;
 using SpaceExploration.Game.Contracts.Planets.Events;
+using SpaceExploration.Game.Contracts.Planets.Messages;
 
 namespace SpaceExploration.Game.Ui;
 
 public class PlanetEventHandler : Saga<PlanetEventHandlerData>,
     IAmStartedByMessages<PlanetCreated>,
+    IAmStartedByMessages<CatchUpResponse>,
     IAmStartedByMessages<Contracts.Planets.Events.DroneDropped>,
     IAmStartedByMessages<DroneTurned>,
     IAmStartedByMessages<DroneMoved>,
@@ -17,6 +19,14 @@ public class PlanetEventHandler : Saga<PlanetEventHandlerData>,
     public PlanetEventHandler(GameStateService gameStateService)
     {
         this.gameStateService = gameStateService;
+    }
+
+    public Task Handle(CatchUpResponse message, IMessageHandlerContext context)
+    {
+        Data.PlanetId = message.PlanetId;
+        gameStateService.HandleCatchUpResponse(message);
+        return Task.CompletedTask;
+
     }
 
     public Task Handle(PlanetCreated message, IMessageHandlerContext context)
@@ -66,10 +76,13 @@ public class PlanetEventHandler : Saga<PlanetEventHandlerData>,
         return Task.CompletedTask;
     }
 
+
+
     protected override void ConfigureHowToFindSaga(SagaPropertyMapper<PlanetEventHandlerData> mapper)
     {
         mapper.MapSaga(saga => saga.PlanetId)
             .ToMessage<PlanetCreated>(msg => msg.PlanetId)
+            .ToMessage<CatchUpResponse>(msg => msg.PlanetId)
             .ToMessage<Contracts.Planets.Events.DroneDropped>(msg => msg.PlanetId)
             .ToMessage<DroneTurned>(msg => msg.PlanetId)
             .ToMessage<DroneMoved>(msg => msg.PlanetId)

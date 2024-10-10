@@ -27,6 +27,14 @@ public class GameState
         Shots = shots;
     }
 
+    internal void HandleCatchUpResponse(Contracts.Planets.Messages.CatchUpResponse message)
+    {
+        Drones.Clear();
+        Shots.Clear();
+        Drones.AddRange(message.Drones.Select(d => new Drone(d.DroneId, d.DroneType, d.DroneName, new Coordinate(d.X, d.Y), new Angle(d.Heading), d.Health)));
+        StateChanged?.Invoke(this, EventArgs.Empty);
+    }
+
     public void HandleDroneDropped(Contracts.Planets.Events.DroneDropped message)
     {
 
@@ -46,6 +54,7 @@ public class GameState
         {
             var newDrone = new Drone(message.DroneId)
             {
+                Position = new Coordinate(message.X, message.Y),
                 Heading = new Angle(message.Heading)
             };
             Drones.Add(newDrone);
@@ -54,6 +63,7 @@ public class GameState
         var drone = Drones.Find(d => d.DroneId == message.DroneId);
         if (drone != null)
         {
+            drone.Position = new Coordinate(message.X, message.Y);
             drone.Heading = new Angle(message.Heading);
         }
 
@@ -67,7 +77,8 @@ public class GameState
         {
             var newDrone = new Drone(message.DroneId)
             {
-                Position = new Coordinate(message.X, message.Y)
+                Position = new Coordinate(message.X, message.Y),
+                Heading = new Angle(message.Heading)
             };
             Drones.Add(newDrone);
         }
@@ -76,6 +87,7 @@ public class GameState
         if (drone != null)
         {
             drone.Position = new Coordinate(message.X, message.Y);
+            drone.Heading = new Angle(message.Heading);
         }
 
         StateChanged?.Invoke(this, EventArgs.Empty);
@@ -140,4 +152,6 @@ public class GameState
             Shots.ToList()
         );
     }
+
+
 }

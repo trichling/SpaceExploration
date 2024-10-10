@@ -3,11 +3,13 @@ using SpaceExploration.Game.Contracts.Drones.Commands;
 using SpaceExploration.Game.Contracts.Drones.Events;
 using SpaceExploration.Game.Contracts.Drones.Messages;
 using SpaceExploration.Game.Contracts.Planets.Events;
+using SpaceExploration.Game.Contracts.Planets.Messages;
 
 namespace SpaceExploration.Game.Planets;
 
 public class Planet : Saga<PlanetData>
      , IAmStartedByMessages<CreatePlanet>
+     , IHandleMessages<CatchUp>
      , IHandleMessages<DropDrone>
      , IHandleMessages<ScanEnvironment>
      , IHandleMessages<LocatePosition>
@@ -28,6 +30,19 @@ public class Planet : Saga<PlanetData>
     {
         Data.PlanetId = message.PlanetId;
         await context.Publish(new PlanetCreated(message.PlanetId, message.Name));
+    }
+
+    public async Task Handle(CatchUp message, IMessageHandlerContext context)
+    {
+        var repsone = new CatchUpResponse(
+            Data.PlanetId,
+            Data.Drones.Select(d => new Contracts.Planets.Messages.Drone(
+                    d.DroneId, d.DroneType, d.DroneName, d.Position.X, d.Position.Y, d.Heading.Degrees, d.Health
+                )
+            )
+            .ToList());
+
+        await context.Reply(repsone);
     }
 
     public async Task Handle(DropDrone message, IMessageHandlerContext context)
@@ -126,7 +141,8 @@ public class Planet : Saga<PlanetData>
         var drone = Data.Drones.Single(d => d.DroneId == message.DroneId);
         drone.Heading = drone.Heading with { Degrees = (drone.Heading.Degrees + message.Angle) % 360 };
 
-        await context.Publish(new DroneTurned(Data.PlanetId, message.DroneId, drone.Heading.Degrees));
+        await context.Publish(new DroneTurned(Data.PlanetId, message.DroneId, drone.Heading.Degrees, drone.Position.X, drone.Position.Y));
+        await context.Reply(new TurnResult(Data.PlanetId, drone.DroneId));
     }
 
     public async Task Handle(Move message, IMessageHandlerContext context)
@@ -150,14 +166,17 @@ public class Planet : Saga<PlanetData>
 
         drone.Position = drone.Position with { X = x, Y = y };
 
-        await context.Publish(new DroneMoved(Data.PlanetId, message.DroneId, drone.Position.X, drone.Position.Y));
+        await context.Publish(new DroneMoved(Data.PlanetId, message.DroneId, drone.Position.X, drone.Position.Y, drone.Heading.Degrees));
+        await context.Reply(new MoveResult(Data.PlanetId, drone.DroneId));
     }
+
 
 
     protected override void ConfigureHowToFindSaga(SagaPropertyMapper<PlanetData> mapper)
     {
         mapper.MapSaga(saga => saga.PlanetId)
             .ToMessage<CreatePlanet>(msg => msg.PlanetId)
+            .ToMessage<CatchUp>(msg => msg.PlanetId)
             .ToMessage<DropDrone>(msg => msg.PlanetId)
             .ToMessage<ScanEnvironment>(msg => msg.PlanetId)
             .ToMessage<LocatePosition>(msg => msg.PlanetId)
