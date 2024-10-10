@@ -47,11 +47,11 @@ public class ScanResultHandler : IHandleMessages<ScanEnvironmentResult>
         if (message.SensorReadings.Count > 0)
         {
             var firstReading = message.SensorReadings.First();
-            //await context.Send(new Shot(Player.PlanetId, Player.Drone1Id, firstReading.ReadingId));
+            await context.Send(new Shot(Player.PlanetId, Player.Drone1Id, firstReading.ReadingId));
         }
         else
         {
-            //await context.Send(new Move(Player.PlanetId, Player.Drone1Id));
+            await context.Send(new Move(Player.PlanetId, Player.Drone1Id));
         }
     }
 }
