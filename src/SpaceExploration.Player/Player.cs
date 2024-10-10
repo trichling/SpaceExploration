@@ -4,14 +4,14 @@ using SpaceExploration.Game.Contracts.Drones.Messages;
 
 namespace SpaceExploration.TestClient;
 
-public class Player1 : BackgroundService
+public class Player : BackgroundService
 {
-    public static Guid PlanetId = new Guid("297a732c-1327-43a2-8000-786ed957e68d");
-    public static Guid Drone1Id = new Guid("4bd29f7e-5626-4f7f-a82c-152026e1cc55");
-    private readonly ILogger<Player1> _logger;
+    public static Guid PlanetId = new Guid("<PlanetId>");
+    public static Guid Drone1Id = new Guid("<PlayerId>");
+    private readonly ILogger<Player> _logger;
     private readonly IMessageSession _messageSession;
 
-    public Player1(ILogger<Player1> logger, IMessageSession messageSession)
+    public Player(ILogger<Player> logger, IMessageSession messageSession)
     {
         _logger = logger;
         _messageSession = messageSession;
@@ -22,7 +22,7 @@ public class Player1 : BackgroundService
         Console.WriteLine("Hit enter if drone was dropped");
         Console.ReadLine();
 
-        await _messageSession.Send(new ScanEnvironment(Player1.Drone1Id, Player1.PlanetId));
+        await _messageSession.Send(new ScanEnvironment(Player.Drone1Id, Player.PlanetId));
 
         while (!stoppingToken.IsCancellationRequested)
         {
@@ -38,7 +38,7 @@ public class DroneDroppedHandler : IHandleMessages<DroneDropped>
     {
         Console.WriteLine("Drones dropped: {0}", message.OverallDroneCount);
 
-        if (message.DroneId == Player1.Drone1Id)
+        if (message.DroneId == Player.Drone1Id)
         {
             Console.WriteLine("Player 1 Drone dropped: {0}", message.DroneId);
         }
@@ -61,13 +61,13 @@ public class ScanResultHandler : IHandleMessages<ScanEnvironmentResult>
         if (message.SensorReadings.Count > 0)
         {
             var firstReading = message.SensorReadings.First();
-            await context.Send(new Shot(Player1.PlanetId, Player1.Drone1Id, firstReading.ReadingId));
+            await context.Send(new Shot(Player.PlanetId, Player.Drone1Id, firstReading.ReadingId));
         }
         else
         {
-            await context.Send(new Turn(Player1.PlanetId, Player1.Drone1Id, new Random().Next(0, 360)));
-            await context.Send(new Move(Player1.PlanetId, Player1.Drone1Id));
-            await context.Send(new ScanEnvironment(Player1.Drone1Id, Player1.PlanetId));
+            await context.Send(new Turn(Player.PlanetId, Player.Drone1Id, new Random().Next(0, 360)));
+            await context.Send(new Move(Player.PlanetId, Player.Drone1Id));
+            await context.Send(new ScanEnvironment(Player.Drone1Id, Player.PlanetId));
         }
     }
 }
@@ -97,22 +97,22 @@ public class ShotResultHandler : IHandleMessages<DroneHit>,
     {
         _logger.LogInformation("Drone hit: {0}", message.TargetDroneId);
 
-        await context.Send(new ScanEnvironment(Player1.Drone1Id, Player1.PlanetId));
+        await context.Send(new ScanEnvironment(Player.Drone1Id, Player.PlanetId));
     }
 
     public async Task Handle(DroneMissed message, IMessageHandlerContext context)
     {
         _logger.LogInformation("Drone missed: {0}", message.DroneId);
 
-        await context.Send(new Move(Player1.PlanetId, Player1.Drone1Id));
-        await context.Send(new ScanEnvironment(Player1.Drone1Id, Player1.PlanetId));
+        await context.Send(new Move(Player.PlanetId, Player.Drone1Id));
+        await context.Send(new ScanEnvironment(Player.Drone1Id, Player.PlanetId));
     }
 
     public async Task Handle(DroneDestroyed message, IMessageHandlerContext context)
     {
         _logger.LogInformation("Drone destroyed: {0}", message.DroneId);
 
-        await context.Send(new Move(Player1.PlanetId, Player1.Drone1Id));
-        await context.Send(new ScanEnvironment(Player1.Drone1Id, Player1.PlanetId));
+        await context.Send(new Move(Player.PlanetId, Player.Drone1Id));
+        await context.Send(new ScanEnvironment(Player.Drone1Id, Player.PlanetId));
     }
 }

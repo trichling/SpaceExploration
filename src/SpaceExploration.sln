@@ -8,8 +8,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpaceExploration.ServiceDef
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpaceExploration.Game", "SpaceExploration.Game\SpaceExploration.Game.csproj", "{EC9D28C4-A126-4B36-8C7D-E0013A4D8AD6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpaceExploration.TestClient", "SpaceExploration.TestClient\SpaceExploration.TestClient.csproj", "{57E29ECC-A0CA-41B8-9E0D-B6D512451971}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpaceExploration.Game.Tests", "SpaceExploration.Game.Tests\SpaceExploration.Game.Tests.csproj", "{80CEC73F-9B3F-45A2-8635-679BB8614DB1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpaceExploration.Game.Ui", "SpaceExploration.Game.Ui\SpaceExploration.Game.Ui.csproj", "{E58B5471-3FF0-4EF6-81A4-060E3B013B9D}"
@@ -19,6 +17,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpaceExploration.Game.Contracts.Planets", "SpaceExploration.Game.Contracts.Planets\SpaceExploration.Game.Contracts.Planets.csproj", "{76CF2ED5-736C-4DD3-9F53-2AD4B057EA28}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpaceExploration.Game.Contracts.Drones", "SpaceExploration.Game.Contracts.Drones\SpaceExploration.Game.Contracts.Drones.csproj", "{3D8ACE9F-1A35-487F-B9FE-8C15B450B37A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpaceExploration.Player", "SpaceExploration.Player\SpaceExploration.Player.csproj", "{93328CE3-0AE2-4E46-8CD4-A21825D12A4C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,10 +38,6 @@ Global
 		{EC9D28C4-A126-4B36-8C7D-E0013A4D8AD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC9D28C4-A126-4B36-8C7D-E0013A4D8AD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EC9D28C4-A126-4B36-8C7D-E0013A4D8AD6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{57E29ECC-A0CA-41B8-9E0D-B6D512451971}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{57E29ECC-A0CA-41B8-9E0D-B6D512451971}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{57E29ECC-A0CA-41B8-9E0D-B6D512451971}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{57E29ECC-A0CA-41B8-9E0D-B6D512451971}.Release|Any CPU.Build.0 = Release|Any CPU
 		{80CEC73F-9B3F-45A2-8635-679BB8614DB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{80CEC73F-9B3F-45A2-8635-679BB8614DB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{80CEC73F-9B3F-45A2-8635-679BB8614DB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -62,6 +58,10 @@ Global
 		{3D8ACE9F-1A35-487F-B9FE-8C15B450B37A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3D8ACE9F-1A35-487F-B9FE-8C15B450B37A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3D8ACE9F-1A35-487F-B9FE-8C15B450B37A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93328CE3-0AE2-4E46-8CD4-A21825D12A4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93328CE3-0AE2-4E46-8CD4-A21825D12A4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93328CE3-0AE2-4E46-8CD4-A21825D12A4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93328CE3-0AE2-4E46-8CD4-A21825D12A4C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -6,14 +6,7 @@ using SpaceExploration.TestClient;
 var builder = Host.CreateApplicationBuilder(args);
 builder.Configuration.AddUserSecrets<Program>();
 
-var endpointConfiguration = new EndpointConfiguration("SpaceExploration.TestClient");
-// var persistence = endpointConfiguration.UsePersistence<LearningPersistence>();
-// persistence.SagaStorageDirectory("..\\sagas");
-//var persistence = endpointConfiguration.UsePersistence<NonDurablePersistence>();
-
-// var transport = endpointConfiguration.UseTransport<LearningTransport>();
-// transport.StorageDirectory("..\\transport");
-
+var endpointConfiguration = new EndpointConfiguration("<EndointName>");
 
 var persistence = endpointConfiguration.UsePersistence<SqlPersistence>();
 persistence.SqlDialect<SqlDialect.MsSqlServer>();
@@ -24,7 +17,7 @@ persistence.ConnectionBuilder(
     });
 
 var transport = endpointConfiguration.UseTransport<AzureServiceBusTransport>();
-transport.ConnectionString(builder.Configuration["ConnectionStrings:AzureServiceBus"]);
+transport.ConnectionString(builder.Configuration["ConnectionStrings:Transport"]);
 transport.SubscriptionRuleNamingConvention(type => type.Name);
 
 var routing = transport.Routing();
@@ -40,7 +33,7 @@ endpointConfiguration.EnableInstallers();
 
 builder.UseNServiceBus(endpointConfiguration);
 
-builder.Services.AddHostedService<Player1>();
+builder.Services.AddHostedService<Player>();
 
 var host = builder.Build();
 host.Run();
