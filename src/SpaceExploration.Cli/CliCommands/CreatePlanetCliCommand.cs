@@ -7,16 +7,16 @@ using ICommand = CliFx.ICommand;
 
 namespace SpaceExploration.Cli.CliCommands;
 
-[Command("create-planet", Description = "Creates a new planet.")]
+[Command("planet create", Description = "Creates a new planet.")]
 public class CreatePlanetCliCommand : ICommand
 {
     private readonly IEndpointInstance _endpointInstance;
 
-    [CommandParameter(0, Name = "planetId", Description = "The unique identifier of the planet.")]
-    public required Guid PlanetId { get; set; }
+    [CommandOption("planetId", 'p', Description = "The unique identifier of the planet.")]
+    public Guid PlanetId { get; set; }
 
-    [CommandParameter(1, Name = "planetName", Description = "The name of the planet.")]
-    public required string PlanetName { get; set; }
+    [CommandOption("planetName", 'n', Description = "The name of the planet.")]
+    public string PlanetName { get; set; }
 
     public CreatePlanetCliCommand(IEndpointInstance endpointInstance)
     {
@@ -25,6 +25,16 @@ public class CreatePlanetCliCommand : ICommand
 
     public async ValueTask ExecuteAsync(IConsole console)
     {
+        if (PlanetId == Guid.Empty)
+        {
+            PlanetId = Guid.NewGuid();
+        }
+
+        if (string.IsNullOrWhiteSpace(PlanetName))
+        {
+            PlanetName = PlanetId.ToString();
+        }
+
         console.Output.WriteLine($"Creating planet '{PlanetName}' with ID '{PlanetId}'...");
 
         var createPlanet = new CreatePlanet(PlanetId, PlanetName);
