@@ -128,7 +128,7 @@ public class Planet : Saga<PlanetData>
             _logger.LogInformation("Drone {0} destroyed", targetDrone.DroneId);
             Data.Drones.Remove(targetDrone);
 
-            await context.Publish(new DroneDestroyed(Data.PlanetId, targetDrone.DroneId));
+            await context.Publish(new DroneDestroyed(Data.PlanetId, targetDrone.DroneId, message.DroneId));
             return;
         }
 

@@ -9,7 +9,18 @@
 @inject GameStateService GameStateService
 @inject IMessageSession MessageSession
 
-<canvas id="gameCanvas" width="800" height="600"></canvas>
+<div style="display: flex;">
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <div style="margin-left: 20px; max-height: 600px; overflow-y: auto;">
+        <h3>Drone Scores</h3>
+        <ul>
+            @foreach (var score in DroneScores)
+            {
+                <li>@score.DroneName: @score.Score</li>
+            }
+        </ul>
+    </div>
+</div>
 
 <br />
 
@@ -19,7 +30,9 @@ Highlight drone: <input id="highligtedDroneId" type="text"  />
 
     [Parameter]
     public string WorldId { get; set; }
-    public Guid WorldIdGuid { get; set; }   
+    public Guid WorldIdGuid { get; set; }
+    public List<DroneScore> DroneScores { get; set; } = new List<DroneScore>();
+
     override protected async Task OnInitializedAsync()
     {
         WorldIdGuid = Guid.Parse(WorldId);
@@ -54,20 +67,12 @@ Highlight drone: <input id="highligtedDroneId" type="text"  />
     private async Task DrawGameState()
     {
         var state = GameStateService.GetGameState(WorldIdGuid);
+        DroneScores = state.Scores;
         await Draw(state);
         GameStateService.RemoveShots(WorldIdGuid);
     }
 
 
     private async Task Draw(GameState state) => await JSRuntime.InvokeVoidAsync("draw", state);
-    /*
-    private async Task ClearCanvas() => await JSRuntime.InvokeVoidAsync("clearCanvas");
-    private async Task DrawDrone(Drone drone) => await JSRuntime.InvokeVoidAsync("drawDrone", drone.Position.X * 800, drone.Position.Y * 600, drone.Heading.Degrees);
-    private async Task DrawShot(DroneShot shot)
-    {
-         await JSRuntime.InvokeVoidAsync("drawShot", shot.Shooter.Position.X * 800, shot.Shooter.Position.Y * 600, shot.Target.Position.Y * 800, shot.Target.Position.Y * 600);  
-    using SpaceExploration.Game.Contracts.Planets.Commands;
-         shot.Drawn = true;
-    }
-    */
+
 }

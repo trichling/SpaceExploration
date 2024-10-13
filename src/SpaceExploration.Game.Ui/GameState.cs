@@ -9,29 +9,34 @@ public class GameState
 
     public event EventHandler StateChanged;
 
+    public List<DroneScore> Scores { get; }
     public List<Drone> Drones { get; }
     public List<DroneShot> Shots { get; }
     public Guid WorldId { get; }
 
     public GameState(Guid worldId)
     {
-        Drones = new List<Drone>();
-        Shots = new List<DroneShot>();
+        Drones = [];
+        Shots = [];
+        Scores = [];
         WorldId = worldId;
     }
 
-    private GameState(Guid worldId, List<Drone> drones, List<DroneShot> shots)
+    private GameState(Guid worldId, List<Drone> drones, List<DroneShot> shots, List<DroneScore> scores)
     {
         WorldId = worldId;
         Drones = drones;
         Shots = shots;
+        Scores = scores;
     }
 
     internal void HandleCatchUpResponse(Contracts.Planets.Messages.CatchUpResponse message)
     {
         Drones.Clear();
         Shots.Clear();
+        Scores.Clear();
         Drones.AddRange(message.Drones.Select(d => new Drone(d.DroneId, d.DroneType, d.DroneName, new Coordinate(d.X, d.Y), new Angle(d.Heading), d.Health)));
+        Scores.AddRange(message.Drones.Select(s => new DroneScore(droneId: s.DroneId, droneName: s.DroneName, score: 0)));
         StateChanged?.Invoke(this, EventArgs.Empty);
     }
 
@@ -42,6 +47,7 @@ public class GameState
         if (!Drones.Exists(d => d.DroneId == message.DroneId))
         {
             Drones.Add(new Drone(message.DroneId, new Coordinate(message.X, message.Y), new Angle(message.Heading)));
+            Scores.Add(new DroneScore(message.DroneId, message.DroneName, 0));
         }
 
         StateChanged?.Invoke(this, EventArgs.Empty);
@@ -108,27 +114,36 @@ public class GameState
             Drones.Add(newDrone);
         }
 
-        var drone = Drones.Find(d => d.DroneId == message.TargetDroneId);
-        if (drone != null)
+        var targetDrone = Drones.Find(d => d.DroneId == message.TargetDroneId);
+        if (targetDrone != null)
         {
-            drone.Health = message.RemainingHealth;
+            targetDrone.Health = message.RemainingHealth;
         }
 
-        var shooter = Drones.Find(d => d.DroneId == message.ShootingDroneId);
-        var target = Drones.Find(d => d.DroneId == message.TargetDroneId);
-        Shots.Add(new DroneShot { Shooter = shooter, Target = target, Cycles = 0 });
+        var shootingDrone = Drones.Find(d => d.DroneId == message.ShootingDroneId);
+        var shooterScore = Scores.Find(s => s.DroneId == message.ShootingDroneId);
+        shooterScore.Score += 1;
+
+        Shots.Add(new DroneShot { Shooter = shootingDrone, Target = targetDrone, Cycles = 0 });
 
         StateChanged?.Invoke(this, EventArgs.Empty);
     }
 
     internal void HandleDroneDestroyed(DroneDestroyed message)
     {
-
         var drone = Drones.Find(d => d.DroneId == message.DroneId);
         if (drone != null)
         {
             Drones.Remove(drone);
         }
+
+        var shooterDroneScore = Scores.Find(s => s.DroneId == message.DestroyedByDroneId);
+        if (shooterDroneScore != null)
+            shooterDroneScore.Score += 10;
+
+        var destroyedDroneScore = Scores.Find(s => s.DroneId == message.DroneId);
+        if (destroyedDroneScore != null)
+            destroyedDroneScore.Score -= 10;
 
         StateChanged?.Invoke(this, EventArgs.Empty);
     }
@@ -149,9 +164,17 @@ public class GameState
         (
             WorldId,
             Drones.ToList(),
-            Shots.ToList()
+            Shots.ToList(),
+            Scores.ToList()
         );
     }
 
 
+}
+
+public class DroneScore(Guid droneId, string droneName, int score)
+{
+    public Guid DroneId { get; } = droneId;
+    public string DroneName { get; } = droneName;
+    public int Score { get; set; } = score;
 }
