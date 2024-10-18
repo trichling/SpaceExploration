@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+
 using NServiceBus.Testing;
 
 using SpaceExploration.Game.Contracts.Planets.Commands;
@@ -37,7 +38,7 @@ public class Planet_DropDrone_Tests
         };
         var context = new TestableMessageHandlerContext();
 
-        var droneId = Guid.NewGuid();   
+        var droneId = Guid.NewGuid();
         var message = new DropDrone(droneId, planetId);
         await saga.Handle(message, context);
 
@@ -59,7 +60,7 @@ public class Planet_DropDrone_Tests
         };
         var context = new TestableMessageHandlerContext();
 
-        var droneId = Guid.NewGuid();   
+        var droneId = Guid.NewGuid();
         var message = new DropDrone(droneId, planetId);
         // Add drone with same id twice
         await saga.Handle(message, context);
@@ -84,7 +85,7 @@ public class Planet_DropDrone_Tests
         };
         var context = new TestableMessageHandlerContext();
 
-        var droneId = Guid.NewGuid();   
+        var droneId = Guid.NewGuid();
         var message = new DropDrone(droneId, planetId);
         await saga.Handle(message, context);
 
@@ -92,7 +93,7 @@ public class Planet_DropDrone_Tests
 
         Assert.NotNull(droneDroppedGame);
         Assert.Equal(message.PlanetId, droneDroppedGame.PlanetId);
-        Assert.Equal(droneId, droneDroppedGame.DroneId);
+        Assert.NotEqual(droneDroppedGame.DroneSignature, Guid.Empty);
 
     }
 }

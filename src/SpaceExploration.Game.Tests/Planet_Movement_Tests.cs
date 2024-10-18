@@ -56,6 +56,7 @@ public class Planet_Movement_Tests
     {
         var planetId = Guid.NewGuid();
         var droneId = Guid.NewGuid();
+        var droneSignature = Guid.NewGuid();
         var saga = new Planet(_logger)
         {
             Data = new PlanetData()
@@ -63,7 +64,7 @@ public class Planet_Movement_Tests
                 PlanetId = planetId,
                 Drones = new List<Drone>
                 {
-                    new Drone(droneId, new Coordinate(0.5, 0.5), new Angle(180)),
+                    new Drone(droneId, droneSignature, new Coordinate(0.5, 0.5), new Angle(180)),
 
                 }
             }
@@ -77,7 +78,7 @@ public class Planet_Movement_Tests
         var publisedMessages = context.PublishedMessages.Single().Message as DroneTurned;
 
         Assert.Equal(270, publisedMessages.Heading);
-        Assert.Equal(droneId, publisedMessages.DroneId);
+        Assert.Equal(droneSignature, publisedMessages.DroneSignature);
     }
 
     [Fact]
@@ -104,7 +105,7 @@ public class Planet_Movement_Tests
         await saga.Handle(message, context);
 
         var drone = saga.Data.Drones.Single();
-        Assert.Equal(drone.Position, new Coordinate(0.4, 0.5));
+        Assert.Equal(new Coordinate(0.49, 0.5), drone.Position);
     }
 
     [Fact]

@@ -80,7 +80,7 @@ public class ShotResultHandler : IHandleMessages<DroneHit>,
 
     public async Task Handle(DroneHit message, IMessageHandlerContext context)
     {
-        _logger.LogInformation("Drone hit: {0}", message.TargetDroneId);
+        _logger.LogInformation("Drone hit: {0}", message.TargetDroneSignature);
         await context.Send(new ScanEnvironment(Player.Drone1Id, Player.PlanetId));
     }
 
@@ -93,7 +93,7 @@ public class ShotResultHandler : IHandleMessages<DroneHit>,
 
     public async Task Handle(DroneDestroyed message, IMessageHandlerContext context)
     {
-        _logger.LogInformation("Drone destroyed: {0}", message.DroneId);
+        _logger.LogInformation("Drone destroyed: {0}", message.DroneSignature);
 
         await context.Send(new ScanEnvironment(Player.Drone1Id, Player.PlanetId));
     }

@@ -56,9 +56,9 @@ public class GameState
     public void HandleDroneTurned(DroneTurned message)
     {
 
-        if (!Drones.Exists(d => d.DroneId == message.DroneId))
+        if (!Drones.Exists(d => d.DroneId == message.DroneSignature))
         {
-            var newDrone = new Drone(message.DroneId)
+            var newDrone = new Drone(message.DroneSignature)
             {
                 Position = new Coordinate(message.X, message.Y),
                 Heading = new Angle(message.Heading)
@@ -66,7 +66,7 @@ public class GameState
             Drones.Add(newDrone);
         }
 
-        var drone = Drones.Find(d => d.DroneId == message.DroneId);
+        var drone = Drones.Find(d => d.DroneId == message.DroneSignature);
         if (drone != null)
         {
             drone.Position = new Coordinate(message.X, message.Y);
@@ -102,26 +102,26 @@ public class GameState
     internal void HandleDroneHit(DroneHit message)
     {
 
-        if (!Drones.Exists(d => d.DroneId == message.ShootingDroneId))
+        if (!Drones.Exists(d => d.DroneId == message.ShootingDroneSignature))
         {
-            var newDrone = new Drone(message.ShootingDroneId);
+            var newDrone = new Drone(message.ShootingDroneSignature);
             Drones.Add(newDrone);
         }
 
-        if (!Drones.Exists(d => d.DroneId == message.TargetDroneId))
+        if (!Drones.Exists(d => d.DroneId == message.TargetDroneSignature))
         {
-            var newDrone = new Drone(message.TargetDroneId);
+            var newDrone = new Drone(message.TargetDroneSignature);
             Drones.Add(newDrone);
         }
 
-        var targetDrone = Drones.Find(d => d.DroneId == message.TargetDroneId);
+        var targetDrone = Drones.Find(d => d.DroneId == message.TargetDroneSignature);
         if (targetDrone != null)
         {
             targetDrone.Health = message.RemainingHealth;
         }
 
-        var shootingDrone = Drones.Find(d => d.DroneId == message.ShootingDroneId);
-        var shooterScore = Scores.Find(s => s.DroneId == message.ShootingDroneId);
+        var shootingDrone = Drones.Find(d => d.DroneId == message.ShootingDroneSignature);
+        var shooterScore = Scores.Find(s => s.DroneId == message.ShootingDroneSignature);
         shooterScore.Score += 1;
 
         Shots.Add(new DroneShot { Shooter = shootingDrone, Target = targetDrone, Cycles = 0 });
@@ -131,17 +131,17 @@ public class GameState
 
     internal void HandleDroneDestroyed(DroneDestroyed message)
     {
-        var drone = Drones.Find(d => d.DroneId == message.DroneId);
+        var drone = Drones.Find(d => d.DroneId == message.DroneSignature);
         if (drone != null)
         {
             Drones.Remove(drone);
         }
 
-        var shooterDroneScore = Scores.Find(s => s.DroneId == message.DestroyedByDroneId);
+        var shooterDroneScore = Scores.Find(s => s.DroneId == message.DestroyedByDroneSignature);
         if (shooterDroneScore != null)
             shooterDroneScore.Score += 10;
 
-        var destroyedDroneScore = Scores.Find(s => s.DroneId == message.DroneId);
+        var destroyedDroneScore = Scores.Find(s => s.DroneId == message.DroneSignature);
         if (destroyedDroneScore != null)
             destroyedDroneScore.Score -= 10;
 
