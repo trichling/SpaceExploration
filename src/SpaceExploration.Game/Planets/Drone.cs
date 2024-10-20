@@ -36,6 +36,11 @@ public class Drone
         DroneType = droneType;
         DroneName = droneName;
     }
+    public Drone(Guid droneId, Guid droneSignature, string droneType, string droneName) : this(droneId, droneSignature)
+    {
+        DroneType = droneType;
+        DroneName = droneName;
+    }
 
     public Drone(Guid droneId, Coordinate position, Angle heading) : this(droneId)
     {

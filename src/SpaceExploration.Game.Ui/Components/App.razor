@@ -26,9 +26,9 @@
         };
 
         window.drawDrone = (drone, highligtedDroneId) => {
-            const x = drone.position.x * 800;
-            const y = (1 - drone.position.y) * 600;
-            const heading = drone.heading.radians;
+            const x = drone.x * 800;
+            const y = (1 - drone.y) * 600;
+            const heading = drone.heading * Math.PI / 180;  
             const canvas = document.getElementById('gameCanvas');
             const context = canvas.getContext('2d');
             context.save();
@@ -59,10 +59,10 @@
         };
 
         window.drawShot = (shot) => {
-            const fromX = shot.shooter.position.x * 800;
-            const fromY = (1 - shot.shooter.position.y) * 600;
-            const toX = shot.target.position.x * 800;
-            const toY = (1 - shot.target.position.y) * 600;
+            const fromX = shot.shooter.x * 800;
+            const fromY = (1 - shot.shooter.y) * 600;
+            const toX = shot.target.x * 800;
+            const toY = (1 - shot.target.y) * 600;
             const canvas = document.getElementById('gameCanvas');
             const context = canvas.getContext('2d');
             context.beginPath();

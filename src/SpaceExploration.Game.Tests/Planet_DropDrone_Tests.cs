@@ -39,7 +39,8 @@ public class Planet_DropDrone_Tests
         var context = new TestableMessageHandlerContext();
 
         var droneId = Guid.NewGuid();
-        var message = new DropDrone(droneId, planetId);
+        var droneSignature = Guid.NewGuid();
+        var message = new DropDrone(droneId, droneSignature, planetId);
         await saga.Handle(message, context);
 
         Assert.Equal(1, saga.Data.Drones.Count);
@@ -61,7 +62,8 @@ public class Planet_DropDrone_Tests
         var context = new TestableMessageHandlerContext();
 
         var droneId = Guid.NewGuid();
-        var message = new DropDrone(droneId, planetId);
+        var droneSignature = Guid.NewGuid();
+        var message = new DropDrone(droneId, droneSignature, planetId);
         // Add drone with same id twice
         await saga.Handle(message, context);
         await saga.Handle(message, context);
@@ -86,14 +88,15 @@ public class Planet_DropDrone_Tests
         var context = new TestableMessageHandlerContext();
 
         var droneId = Guid.NewGuid();
-        var message = new DropDrone(droneId, planetId);
+        var droneSignature = Guid.NewGuid();
+        var message = new DropDrone(droneId, droneSignature, planetId);
         await saga.Handle(message, context);
 
         var droneDroppedGame = context.PublishedMessages.Single().Message as DroneDropped;
 
         Assert.NotNull(droneDroppedGame);
         Assert.Equal(message.PlanetId, droneDroppedGame.PlanetId);
-        Assert.NotEqual(droneDroppedGame.DroneSignature, Guid.Empty);
+        Assert.NotEqual(droneDroppedGame.DroneSignature, droneSignature);
 
     }
 }

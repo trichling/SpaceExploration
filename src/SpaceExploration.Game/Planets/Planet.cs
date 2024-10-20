@@ -52,7 +52,7 @@ public class Planet : Saga<PlanetData>
             return;
         }
 
-        var drone = new Drone(message.DroneId, message.DroneType, message.DroneName);
+        var drone = new Drone(message.DroneId, message.DroneSignature, message.DroneType, message.DroneName);
         Data.Drones.Add(drone);
 
         await context.Publish(new Contracts.Planets.Events.DroneDropped(Data.PlanetId, drone.DroneSignature, drone.DroneType, drone.DroneName, drone.Position.X, drone.Position.Y, drone.Heading.Degrees, Data.Drones.Count));
@@ -97,13 +97,19 @@ public class Planet : Saga<PlanetData>
 
     public async Task Handle(Shot message, IMessageHandlerContext context)
     {
-        if (!Data.SensorReadings.ContainsKey(message.DroneId))
+        var shootingDrone = Data.Drones.Find(d => d.DroneId == message.DroneId);
+
+        if (shootingDrone is null)
         {
-            await context.Publish(new DroneMissed(Data.PlanetId, message.DroneId));
             return;
         }
 
-        var shootingDrone = Data.Drones.Find(d => d.DroneId == message.DroneId);
+        if (!Data.SensorReadings.ContainsKey(message.DroneId))
+        {
+            await context.Publish(new DroneMissed(Data.PlanetId, shootingDrone.DroneSignature));
+            return;
+        }
+
         var reading = Data.SensorReadings[message.DroneId].Find(sr => sr.ReadingId == message.TargetId);
 
         if (reading is null)
