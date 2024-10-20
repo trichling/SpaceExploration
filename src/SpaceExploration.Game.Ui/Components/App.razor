@@ -26,6 +26,10 @@
         };
 
         window.drawDrone = (drone, highligtedDroneId) => {
+            if (!drone) {
+                return;
+            }
+
             const x = drone.x * 800;
             const y = (1 - drone.y) * 600;
             const heading = drone.heading * Math.PI / 180;  
@@ -34,7 +38,7 @@
             context.save();
             context.translate(y, x);
 
-            if (drone.droneId === highligtedDroneId) {
+            if (drone.droneSignature === highligtedDroneId) {
                 context.fillStyle = 'green';
                 context.scale(2, 2);
             }
@@ -59,6 +63,10 @@
         };
 
         window.drawShot = (shot) => {
+            If (!shot || !shot.shooter || !shot.target) {
+                return;
+            }
+
             const fromX = shot.shooter.x * 800;
             const fromY = (1 - shot.shooter.y) * 600;
             const toX = shot.target.x * 800;

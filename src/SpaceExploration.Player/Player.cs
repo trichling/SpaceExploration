@@ -8,7 +8,7 @@ public class Player : BackgroundService
 {
     public static Guid PlanetId = new Guid("4e6ab55f-31f3-4921-bc36-40894a2a908e");
     public static Guid Drone1Id = new Guid("9f3a9498-3f94-4b0b-bd12-10a29dc92089");
-    public static Guid Drone1Signature = new Guid("f84307e4-2493-4631-a139-8f3119bed3f1");
+    public static Guid Drone1Signature = new Guid("f6336b3b-8b3f-4450-85e7-53beeb2b2988");
     private readonly ILogger<Player> _logger;
     private readonly IMessageSession _messageSession;
 

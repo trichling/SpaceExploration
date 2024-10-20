@@ -50,8 +50,11 @@ Highlight drone: <input id="highligtedDroneId" type="text"  />
 
             await MessageSession.Send(new CatchUp(WorldIdGuid));
         }
+        else
+        {
+            await DrawGameState();
+        }
 
-        await DrawGameState();
         base.OnAfterRender(firstRender);
     }
  
