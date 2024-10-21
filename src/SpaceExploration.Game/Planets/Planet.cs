@@ -37,7 +37,7 @@ public class Planet : Saga<PlanetData>
         var repsone = new CatchUpResponse(
             Data.PlanetId,
             Data.Drones.Select(d => new Contracts.Planets.Messages.Drone(
-                    d.DroneId, d.DroneType, d.DroneName, d.Position.X, d.Position.Y, d.Heading.Degrees, d.Health
+                    d.DroneSignature, d.DroneType, d.DroneName, d.Position.X, d.Position.Y, d.Heading.Degrees, d.Health
                 )
             )
             .ToList());
