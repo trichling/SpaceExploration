@@ -26,15 +26,19 @@
         };
 
         window.drawDrone = (drone, highligtedDroneId) => {
-            const x = drone.position.x * 800;
-            const y = (1 - drone.position.y) * 600;
-            const heading = drone.heading.radians;
+            if (!drone) {
+                return;
+            }
+
+            const x = drone.x * 800;
+            const y = (1 - drone.y) * 600;
+            const heading = drone.heading * Math.PI / 180;  
             const canvas = document.getElementById('gameCanvas');
             const context = canvas.getContext('2d');
             context.save();
             context.translate(y, x);
 
-            if (drone.droneId === highligtedDroneId) {
+            if (drone.droneSignature === highligtedDroneId) {
                 context.fillStyle = 'green';
                 context.scale(2, 2);
             }
@@ -59,10 +63,14 @@
         };
 
         window.drawShot = (shot) => {
-            const fromX = shot.shooter.position.x * 800;
-            const fromY = (1 - shot.shooter.position.y) * 600;
-            const toX = shot.target.position.x * 800;
-            const toY = (1 - shot.target.position.y) * 600;
+            if (!shot || !shot.shooter || !shot.target) {
+                return;
+            }
+
+            const fromX = shot.shooter.x * 800;
+            const fromY = (1 - shot.shooter.y) * 600;
+            const toX = shot.target.x * 800;
+            const toY = (1 - shot.target.y) * 600;
             const canvas = document.getElementById('gameCanvas');
             const context = canvas.getContext('2d');
             context.beginPath();

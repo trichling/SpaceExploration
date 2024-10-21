@@ -65,9 +65,11 @@ public class DropDroneCliCommand : ICommand
             DroneType = "Default";
         }
 
-        await console.Output.WriteLineAsync($"Dropping drone '{DroneName}' with ID '{DroneId}' on planet '{PlanetId}'...");
+        var droneSignature = Guid.NewGuid();
 
-        var dropDrone = new DropDrone(DroneId.Value, PlanetId, DroneType, DroneName);
+        await console.Output.WriteLineAsync($"Dropping drone '{DroneName}' with ID '{DroneId}' and siganture '{droneSignature}' on planet '{PlanetId}'...");
+
+        var dropDrone = new DropDrone(DroneId.Value, droneSignature, PlanetId, DroneType, DroneName);
         await _endpointInstance.Send(dropDrone);
     }
 
@@ -76,10 +78,11 @@ public class DropDroneCliCommand : ICommand
         for (var i = 0; i < NumberOfDrones; i++)
         {
             var droneId = Guid.NewGuid();
+            var droneSignature = Guid.NewGuid();
 
-            await console.Output.WriteLineAsync($"Dropping drone with ID '{droneId}' on planet '{PlanetId}'...");
+            await console.Output.WriteLineAsync($"Dropping drone with ID '{droneId}' and signature '{droneSignature}' on planet '{PlanetId}'...");
 
-            var dropDrone = new DropDrone(droneId, PlanetId);
+            var dropDrone = new DropDrone(droneId, droneSignature, PlanetId);
             await _endpointInstance.Send(dropDrone);
         }
     }

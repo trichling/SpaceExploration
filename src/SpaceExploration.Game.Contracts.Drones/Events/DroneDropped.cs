@@ -1,3 +1,3 @@
 namespace SpaceExploration.Game.Contracts.Drones.Events;
 
-public record DroneDropped(Guid PlanetId, Guid DroneId, string DroneType, string DroneName, int OverallDroneCount);
+public record DroneDropped(Guid PlanetId, Guid DroneSignature, string DroneType, string DroneName, int OverallDroneCount);

@@ -1,6 +1,6 @@
 namespace SpaceExploration.Game.Ui;
 
-using SpaceExploration.Game.Planets;
+using SpaceExploration.Game.Contracts.Planets.Messages;
 
 public record DroneShot
 {

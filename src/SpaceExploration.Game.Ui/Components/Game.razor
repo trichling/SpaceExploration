@@ -2,7 +2,6 @@
 @rendermode InteractiveServer
 
 @using SpaceExploration.Game.Contracts.Planets.Commands
-@using SpaceExploration.Game.Planets
 @using System.Timers
 
 @inject IJSRuntime JSRuntime
@@ -14,10 +13,10 @@
     <div style="margin-left: 20px; max-height: 600px; overflow-y: auto;">
         <h3>Drone Scores</h3>
         <ul>
-            @foreach (var score in DroneScores)
+            @* @foreach (var score in DroneScores)
             {
                 <li>@score.DroneName: @score.Score</li>
-            }
+            } *@
         </ul>
     </div>
 </div>
@@ -31,7 +30,6 @@ Highlight drone: <input id="highligtedDroneId" type="text"  />
     [Parameter]
     public string WorldId { get; set; }
     public Guid WorldIdGuid { get; set; }
-    public List<DroneScore> DroneScores { get; set; } = new List<DroneScore>();
 
     override protected async Task OnInitializedAsync()
     {
@@ -52,8 +50,11 @@ Highlight drone: <input id="highligtedDroneId" type="text"  />
 
             await MessageSession.Send(new CatchUp(WorldIdGuid));
         }
+        else
+        {
+            await DrawGameState();
+        }
 
-        await DrawGameState();
         base.OnAfterRender(firstRender);
     }
  
@@ -67,7 +68,6 @@ Highlight drone: <input id="highligtedDroneId" type="text"  />
     private async Task DrawGameState()
     {
         var state = GameStateService.GetGameState(WorldIdGuid);
-        DroneScores = state.Scores;
         await Draw(state);
         GameStateService.RemoveShots(WorldIdGuid);
     }

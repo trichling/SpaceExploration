@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <ItemGroup>
-    <ProjectReference Include="..\SpaceExploration.Game\SpaceExploration.Game.csproj" />
+    <ProjectReference Include="..\SpaceExploration.Game.Contracts.Drones\SpaceExploration.Game.Contracts.Drones.csproj" />
+    <ProjectReference Include="..\SpaceExploration.Game.Contracts.Planets\SpaceExploration.Game.Contracts.Planets.csproj" />
   </ItemGroup>
 
   <ItemGroup>

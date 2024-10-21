@@ -6,8 +6,9 @@ namespace SpaceExploration.Player;
 
 public class Player : BackgroundService
 {
-    public static Guid PlanetId = new Guid("271c34bf-1a28-432c-b2a0-1374cabd04b9");
-    public static Guid Drone1Id = new Guid("e1d3b1dc-d7be-4351-8b7a-4c613c46403d");
+    public static Guid PlanetId = new Guid("4e6ab55f-31f3-4921-bc36-40894a2a908e");
+    public static Guid Drone1Id = new Guid("9f3a9498-3f94-4b0b-bd12-10a29dc92089");
+    public static Guid Drone1Signature = new Guid("f6336b3b-8b3f-4450-85e7-53beeb2b2988");
     private readonly ILogger<Player> _logger;
     private readonly IMessageSession _messageSession;
 
@@ -80,20 +81,20 @@ public class ShotResultHandler : IHandleMessages<DroneHit>,
 
     public async Task Handle(DroneHit message, IMessageHandlerContext context)
     {
-        _logger.LogInformation("Drone hit: {0}", message.TargetDroneId);
+        _logger.LogInformation("Drone hit: {0}", message.TargetDroneSignature);
         await context.Send(new ScanEnvironment(Player.Drone1Id, Player.PlanetId));
     }
 
     public async Task Handle(DroneMissed message, IMessageHandlerContext context)
     {
-        _logger.LogInformation("Drone missed: {0}", message.DroneId);
-        if (message.DroneId.Equals(Player.Drone1Id))
+        _logger.LogInformation("Drone missed: {0}", message.DroneSignature);
+        if (message.DroneSignature.Equals(Player.Drone1Id))
             await context.Send(new ScanEnvironment(Player.Drone1Id, Player.PlanetId));
     }
 
     public async Task Handle(DroneDestroyed message, IMessageHandlerContext context)
     {
-        _logger.LogInformation("Drone destroyed: {0}", message.DroneId);
+        _logger.LogInformation("Drone destroyed: {0}", message.DroneSignature);
 
         await context.Send(new ScanEnvironment(Player.Drone1Id, Player.PlanetId));
     }

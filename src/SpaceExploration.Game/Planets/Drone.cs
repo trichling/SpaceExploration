@@ -8,9 +8,18 @@ public class Drone
 
     }
 
-    public Drone(Guid droneId)
+    public Drone(Guid droneId) : this(droneId, Guid.NewGuid())
     {
         DroneId = droneId;
+        DroneSignature = Guid.NewGuid();
+        DroneType = "Default";
+        DroneName = $"{DroneType}-{droneId.ToString()}";
+    }
+
+    public Drone(Guid droneId, Guid droneSignature)
+    {
+        DroneId = droneId;
+        DroneSignature = droneSignature;
         DroneType = "Default";
         DroneName = $"{DroneType}-{droneId.ToString()}";
     }
@@ -22,14 +31,24 @@ public class Drone
         DroneName = $"{droneType}-{droneId.ToString()}";
     }
 
-    public Drone(Guid droneId, string droneType, string droneName)
+    public Drone(Guid droneId, string droneType, string droneName) : this(droneId)
     {
-        DroneId = droneId;
+        DroneType = droneType;
+        DroneName = droneName;
+    }
+    public Drone(Guid droneId, Guid droneSignature, string droneType, string droneName) : this(droneId, droneSignature)
+    {
         DroneType = droneType;
         DroneName = droneName;
     }
 
     public Drone(Guid droneId, Coordinate position, Angle heading) : this(droneId)
+    {
+        Position = position;
+        Heading = heading;
+    }
+
+    public Drone(Guid droneId, Guid droneSignature, Coordinate position, Angle heading) : this(droneId, droneSignature)
     {
         Position = position;
         Heading = heading;
@@ -42,7 +61,14 @@ public class Drone
         Health = health;
     }
 
-    public Drone(Guid droneId, string droneType, string droneName, Coordinate position, Angle heading, int health) : this(droneId)
+    public Drone(Guid droneId, Guid droneSignature, Coordinate position, Angle heading, int health) : this(droneId, droneSignature)
+    {
+        Position = position;
+        Heading = heading;
+        Health = health;
+    }
+
+    public Drone(Guid droneId, Guid droneSignature, string droneType, string droneName, Coordinate position, Angle heading, int health) : this(droneId, droneSignature)
     {
         DroneType = droneType;
         DroneName = droneName;
@@ -52,6 +78,7 @@ public class Drone
     }
 
     public Guid DroneId { get; set; }
+    public Guid DroneSignature { get; set; }
     public string DroneType { get; set; }
     public string DroneName { get; set; }
 
