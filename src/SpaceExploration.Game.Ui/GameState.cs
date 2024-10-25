@@ -10,20 +10,23 @@ public class GameState
     public event EventHandler StateChanged;
 
     public List<Drone> Drones { get; }
+    public List<DroneScore> Scores { get; }
     public List<DroneShot> Shots { get; }
     public Guid WorldId { get; }
 
     public GameState(Guid worldId)
     {
         Drones = [];
+        Scores = [];
         Shots = [];
         WorldId = worldId;
     }
 
-    private GameState(Guid worldId, List<Drone> drones, List<DroneShot> shots)
+    private GameState(Guid worldId, List<Drone> drones, List<DroneScore> scores, List<DroneShot> shots)
     {
         WorldId = worldId;
         Drones = drones;
+        Scores = scores;
         Shots = shots;
     }
 
@@ -97,6 +100,27 @@ public class GameState
         StateChanged?.Invoke(this, EventArgs.Empty);
     }
 
+    internal void HandleDroneScoreUpdated(DroneScoreUpdated message)
+    {
+
+        var score = Scores.Find(d => d.DroneSignature == message.DroneSignature);
+        if (score == null)
+        {
+            score = new DroneScore { DroneSignature = message.DroneSignature, Score = message.Score };
+            Scores.Add(score);
+        }
+
+        score.Score = message.Score;
+
+        var drone = Drones.Find(d => d.DroneSignature == message.DroneSignature);
+        if (drone != null)
+        {
+            score.DroneName = drone.DroneName;
+        }
+
+        StateChanged?.Invoke(this, EventArgs.Empty);
+    }
+
     internal void RemoveDrawnShots()
     {
         foreach (var shot in Shots)
@@ -104,7 +128,7 @@ public class GameState
             shot.Cycles++;
         }
 
-        Shots.RemoveAll(s => s.Cycles > 10);
+        Shots.RemoveAll(s => s.Cycles > 3);
     }
 
     internal GameState Freeze()
@@ -113,9 +137,17 @@ public class GameState
         (
             WorldId,
             Drones.ToList(),
+            Scores.ToList(),
             Shots.ToList()
         );
     }
 
 
+}
+
+public class DroneScore
+{
+    public Guid DroneSignature { get; set; }
+    public string DroneName { get; set; }
+    public int Score { get; set; }
 }

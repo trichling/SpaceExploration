@@ -59,5 +59,9 @@ public class GameStateService
         gameState.RemoveDrawnShots();
     }
 
-
+    internal void HandleDroneScoreUpdated(DroneScoreUpdated message)
+    {
+        var gameState = gameStates.GetOrAdd(message.PlanetId, new GameState(message.PlanetId));
+        gameState.HandleDroneScoreUpdated(message); 
+    }
 }

@@ -29,6 +29,7 @@ public class Planet : Saga<PlanetData>
     public async Task Handle(CreatePlanet message, IMessageHandlerContext context)
     {
         Data.PlanetId = message.PlanetId;
+        await context.Send(new Create_1_0_10_0_Scoring(message.PlanetId));
         await context.Publish(new PlanetCreated(message.PlanetId, message.Name));
     }
 
