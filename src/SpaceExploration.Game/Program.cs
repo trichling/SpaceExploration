@@ -1,5 +1,7 @@
 using Microsoft.Data.SqlClient;
+
 using SpaceExploration.Game;
+using SpaceExploration.Game.Contracts.Planets.Commands;
 
 var builder = Host.CreateApplicationBuilder(args);
 builder.Configuration.AddUserSecrets<Program>();
@@ -7,13 +9,6 @@ builder.Configuration.AddUserSecrets<Program>();
 builder.Services.AddHostedService<Worker>();
 
 var endpointConfiguration = new EndpointConfiguration("SpaceExploration.Game");
-
-// var persistence = endpointConfiguration.UsePersistence<LearningPersistence>();
-// persistence.SagaStorageDirectory("..\\sagas");
-//var persistence = endpointConfiguration.UsePersistence<NonDurablePersistence>();
-
-// var transport = endpointConfiguration.UseTransport<LearningTransport>();
-// transport.StorageDirectory("..\\transport");
 
 var persistence = endpointConfiguration.UsePersistence<SqlPersistence>();
 persistence.SqlDialect<SqlDialect.MsSqlServer>();
@@ -24,8 +19,11 @@ persistence.ConnectionBuilder(
     });
 
 var transport = endpointConfiguration.UseTransport<AzureServiceBusTransport>();
-transport.ConnectionString(builder.Configuration["ConnectionStrings:Transport"]); 
+transport.ConnectionString(builder.Configuration["ConnectionStrings:Transport"]);
 transport.SubscriptionRuleNamingConvention(type => type.Name);
+
+var routing = transport.Routing();
+routing.RouteToEndpoint(typeof(Create_1_0_10_0_Scoring), "SpaceExploration.Game");
 
 var conventions = endpointConfiguration.Conventions();
 conventions.DefiningCommandsAs(t => t.Namespace != null && t.Namespace.EndsWith("Commands"));

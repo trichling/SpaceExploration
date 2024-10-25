@@ -11,7 +11,8 @@ public class PlanetEventHandler : Saga<PlanetEventHandlerData>,
     IAmStartedByMessages<DroneTurned>,
     IAmStartedByMessages<DroneMoved>,
     IAmStartedByMessages<DroneHit>,
-    IAmStartedByMessages<DroneDestroyed>
+    IAmStartedByMessages<DroneDestroyed>,
+    IAmStartedByMessages<DroneScoreUpdated>
 
 {
     private readonly GameStateService gameStateService;
@@ -76,7 +77,13 @@ public class PlanetEventHandler : Saga<PlanetEventHandlerData>,
         return Task.CompletedTask;
     }
 
+    public Task Handle(DroneScoreUpdated message, IMessageHandlerContext context)
+    {
+        Data.PlanetId = message.PlanetId;
 
+        gameStateService.HandleDroneScoreUpdated(message);
+        return Task.CompletedTask;
+    }
 
     protected override void ConfigureHowToFindSaga(SagaPropertyMapper<PlanetEventHandlerData> mapper)
     {
@@ -88,6 +95,7 @@ public class PlanetEventHandler : Saga<PlanetEventHandlerData>,
             .ToMessage<DroneMoved>(msg => msg.PlanetId)
             .ToMessage<DroneHit>(msg => msg.PlanetId)
             .ToMessage<DroneDestroyed>(msg => msg.PlanetId)
+            .ToMessage<DroneScoreUpdated>(msg => msg.PlanetId)
             ;
     }
 }
