@@ -14,7 +14,7 @@ host.Run();
 
 EndpointConfiguration ConfigureEndpoint()
 {
-    var endpointConfiguration = new EndpointConfiguration("SpaceExploration.Player.Tobias");
+    var endpointConfiguration = new EndpointConfiguration("<EndpointName>");
     endpointConfiguration.ConfigurePersistence(builder.Configuration["ConnectionStrings:Persistence"]);
     endpointConfiguration.ConfigureTransport(builder.Configuration["ConnectionStrings:Transport"])
                          .ConfigureRoutingOfTransport();
