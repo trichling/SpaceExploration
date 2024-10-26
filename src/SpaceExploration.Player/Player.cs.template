@@ -1,10 +1,13 @@
+using SpaceExploration.Game.Contracts.Drones.Commands;
+using SpaceExploration.Game.Contracts.Drones.Messages;
+
 namespace SpaceExploration.Player;
 
 public class Player : BackgroundService
 {
     public static Guid PlanetId = new Guid("<PlanetId>");
-    public static Guid Drone1Id = new Guid("<PlayerId>");
-    public static Guid Drone1Signature = new Guid("<PlayerSignature>");
+    public static Guid Drone1Id = new Guid("<DroneId>");
+    public static Guid Drone1Signature = new Guid("<DroneSignature>");
 
     private readonly ILogger<Player> _logger;
     private readonly IMessageSession _messageSession;

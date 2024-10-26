@@ -1,17 +1,18 @@
+using Microsoft.Data.SqlClient;
+using SpaceExploration.Game.Contracts.Drones.Commands;
 using SpaceExploration.Player;
 
 var builder = Host.CreateApplicationBuilder(args);
 builder.Configuration.AddUserSecrets<Program>();
 builder.Services.AddHostedService<Player>();
 
-var endpointConfiguration = ConfgureEndpoint();
+var endpointConfiguration = ConfigureEndpoint();
 builder.UseNServiceBus(endpointConfiguration);
 
 var host = builder.Build();
-await host.RunAsync();
+host.Run();
 
-
-EndpointConfiguration ConfgureEndpoint()
+EndpointConfiguration ConfigureEndpoint()
 {
     var endpointConfiguration = new EndpointConfiguration("SpaceExploration.Player.Tobias");
     endpointConfiguration.ConfigurePersistence(builder.Configuration["ConnectionStrings:Persistence"]);
@@ -24,4 +25,3 @@ EndpointConfiguration ConfgureEndpoint()
 
     return endpointConfiguration;
 }
-

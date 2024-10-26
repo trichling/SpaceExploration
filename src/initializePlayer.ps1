@@ -3,8 +3,8 @@ param (
     [Parameter(Mandatory)] [string] $PersistenceConnectionString,
     [Parameter(Mandatory)] [string] $TransportConnectionString,
     [Parameter(Mandatory)] [string] $PlanetId,
-    [Parameter(Mandatory)] [string] $PlayerId,
-    [Parameter(Mandatory)] [string] $PlayerSignature
+    [Parameter(Mandatory)] [string] $DroneId,
+    [Parameter(Mandatory)] [string] $DroneSignature
 )
 
 $prevPwd = $PWD; Set-Location -ErrorAction Stop -LiteralPath $PSScriptRoot
@@ -22,8 +22,8 @@ dotnet user-secrets set "ConnectionStrings:Transport" "$TransportConnectionStrin
 
 (Get-Content "Player.cs.template") |
         Foreach-Object { $_ -replace "<PlanetId>", $PlanetId } |
-        Foreach-Object { $_ -replace "<PlayerId>", $PlayerId } |
-        Foreach-Object { $_ -replace "<PlanetSignature>", $PlayerSignature } |
+        Foreach-Object { $_ -replace "<DroneId>", $DroneId } |
+        Foreach-Object { $_ -replace "<DroneSignature>", $DroneSignature } |
         Set-Content "Player.cs"
 
 Set-Location -Path $prevPwd
