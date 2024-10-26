@@ -1,39 +1,27 @@
 using Microsoft.Data.SqlClient;
-
 using SpaceExploration.Game.Contracts.Drones.Commands;
 using SpaceExploration.Player;
 
 var builder = Host.CreateApplicationBuilder(args);
 builder.Configuration.AddUserSecrets<Program>();
-
-var endpointConfiguration = new EndpointConfiguration("<EndointName>");
-
-var persistence = endpointConfiguration.UsePersistence<SqlPersistence>();
-persistence.SqlDialect<SqlDialect.MsSqlServer>();
-persistence.ConnectionBuilder(
-    connectionBuilder: () =>
-    {
-        return new SqlConnection(builder.Configuration["ConnectionStrings:Persistence"]);
-    });
-
-var transport = endpointConfiguration.UseTransport<AzureServiceBusTransport>();
-transport.ConnectionString(builder.Configuration["ConnectionStrings:Transport"]);
-transport.SubscriptionRuleNamingConvention(type => type.Name);
-
-var routing = transport.Routing();
-routing.RouteToEndpoint(typeof(Move).Assembly, "SpaceExploration.Game");
-
-var conventions = endpointConfiguration.Conventions();
-conventions.DefiningCommandsAs(t => t.Namespace != null && t.Namespace.EndsWith("Commands"));
-conventions.DefiningEventsAs(t => t.Namespace != null && t.Namespace.EndsWith("Events"));
-conventions.DefiningMessagesAs(t => t.Namespace != null && t.Namespace.EndsWith("Messages"));
-
-endpointConfiguration.UseSerialization<SystemJsonSerializer>();
-endpointConfiguration.EnableInstallers();
-
-builder.UseNServiceBus(endpointConfiguration);
-
 builder.Services.AddHostedService<Player>();
+
+var endpointConfiguration = ConfigureEndpoint();
+builder.UseNServiceBus(endpointConfiguration);
 
 var host = builder.Build();
 host.Run();
+
+EndpointConfiguration ConfigureEndpoint()
+{
+    var endpointConfiguration = new EndpointConfiguration("SpaceExploration.Player.Tobias");
+    endpointConfiguration.ConfigurePersistence(builder.Configuration["ConnectionStrings:Persistence"]);
+    endpointConfiguration.ConfigureTransport(builder.Configuration["ConnectionStrings:Transport"])
+                         .ConfigureRoutingOfTransport();
+    endpointConfiguration.ConfigureConventions();
+
+    endpointConfiguration.UseSerialization<SystemJsonSerializer>();
+    endpointConfiguration.EnableInstallers();
+
+    return endpointConfiguration;
+}

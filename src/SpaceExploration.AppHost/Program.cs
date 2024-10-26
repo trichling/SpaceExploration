@@ -2,7 +2,7 @@ using Projects;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
-var transportConnectionString = builder.AddParameter("AzureServiceBusConnectionString");
+var transportConnectionString = builder.AddParameter("TransportConnectionString");
 var persistenceConnectionString = builder.AddParameter("PersistenceConnectionString");
 
 var game = builder.AddProject<SpaceExploration_Game>("game")
