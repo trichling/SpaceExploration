@@ -4,11 +4,14 @@ using SpaceExploration.Game.Contracts.Drones.Events;
 using SpaceExploration.Game.Contracts.Drones.Messages;
 using SpaceExploration.Game.Contracts.Planets.Events;
 using SpaceExploration.Game.Contracts.Planets.Messages;
+using SpaceExploration.Game.DroneTypes;
+using SpaceExploration.Game.PlayerRessurections;
 
 namespace SpaceExploration.Game.Planets;
 
 public class Planet : Saga<PlanetData>
      , IAmStartedByMessages<CreatePlanet>
+     , IHandleMessages<DestroyPlanet>
      , IHandleMessages<CatchUp>
      , IHandleMessages<DropDrone>
      , IHandleMessages<ScanEnvironment>
@@ -29,8 +32,20 @@ public class Planet : Saga<PlanetData>
     public async Task Handle(CreatePlanet message, IMessageHandlerContext context)
     {
         Data.PlanetId = message.PlanetId;
-        await context.Send(new Create_1_0_10_0_Scoring(message.PlanetId));
+        await context.SendLocal(new Create_1_0_10_0_Scoring(message.PlanetId));
         await context.Publish(new PlanetCreated(message.PlanetId, message.Name));
+    }
+
+    public async Task Handle(DestroyPlanet message, IMessageHandlerContext context)
+    {
+        foreach (var drone in Data.Drones)
+        {
+            await context.Publish(new DroneDestroyed(Data.PlanetId, drone.DroneSignature, Data.PlanetId));
+        }
+
+        Data.Drones.Clear();
+
+        MarkAsComplete();
     }
 
     public async Task Handle(CatchUp message, IMessageHandlerContext context)
@@ -56,6 +71,14 @@ public class Planet : Saga<PlanetData>
         var drone = new Drone(message.DroneId, message.DroneSignature, message.DroneType, message.DroneName);
         Data.Drones.Add(drone);
 
+        await (drone.DroneType switch
+        {
+            "Player" => context.SendLocal(new EnablePlayerRessurection(Data.PlanetId, drone.DroneId, drone.DroneSignature, drone.DroneName)),
+            "Turret" => context.SendLocal(new BecomeATurret(Data.PlanetId, drone.DroneId, drone.DroneSignature)),
+            //"Scout" => context.Send(new BecomeAScout(Data.PlanetId, drone.DroneSignature)),
+            _ => Task.CompletedTask
+        });
+
         await context.Publish(new Contracts.Planets.Events.DroneDropped(Data.PlanetId, drone.DroneSignature, drone.DroneType, drone.DroneName, drone.Position.X, drone.Position.Y, drone.Heading.Degrees, Data.Drones.Count));
     }
 
@@ -80,7 +103,7 @@ public class Planet : Saga<PlanetData>
             Data.SensorReadings.Add(message.DroneId, sensorReadings);
         }
 
-        await context.Reply(new ScanEnvironmentResult(message.DroneId, sensorReadings.Select(sr => new DroneReading(sr.ReadingId, sr.DroneSignature, sr.Distance, sr.Angle)).ToList()));
+        await context.Reply(new ScanEnvironmentResult(drone.DroneId, drone.DroneSignature, sensorReadings.Select(sr => new DroneReading(sr.ReadingId, sr.DroneSignature, sr.Distance, sr.Angle)).ToList()));
     }
 
     public async Task Handle(LocatePosition message, IMessageHandlerContext context)
@@ -150,15 +173,18 @@ public class Planet : Saga<PlanetData>
         drone.Heading = drone.Heading with { Degrees = (drone.Heading.Degrees + message.Angle) % 360 };
 
         await context.Publish(new DroneTurned(Data.PlanetId, drone.DroneSignature, drone.Heading.Degrees, drone.Position.X, drone.Position.Y));
-        await context.Reply(new TurnResult(Data.PlanetId, drone.DroneId));
+        await context.Reply(new TurnResult(drone.DroneId, drone.DroneSignature, drone.Heading.Degrees));
     }
 
     public async Task Handle(Move message, IMessageHandlerContext context)
     {
         var drone = Data.Drones.Single(d => d.DroneId == message.DroneId);
 
-        var x = drone.Position.X + Math.Cos(drone.Heading.Radians) * drone.MoveDistance;
-        var y = drone.Position.Y + Math.Sin(drone.Heading.Radians) * drone.MoveDistance;
+        var deltaX = Math.Cos(drone.Heading.Radians) * drone.MoveDistance;
+        var deltaY = Math.Sin(drone.Heading.Radians) * drone.MoveDistance;
+
+        var x = drone.Position.X + deltaX;
+        var y = drone.Position.Y + deltaY;
 
         if (x > 1)
             x = x - 1;
@@ -175,7 +201,7 @@ public class Planet : Saga<PlanetData>
         drone.Position = drone.Position with { X = x, Y = y };
 
         await context.Publish(new DroneMoved(Data.PlanetId, drone.DroneSignature, drone.Position.X, drone.Position.Y, drone.Heading.Degrees));
-        await context.Reply(new MoveResult(Data.PlanetId, drone.DroneId));
+        await context.Reply(new MoveResult(Data.PlanetId, drone.DroneId, deltaX, deltaY));
     }
 
 
@@ -184,6 +210,7 @@ public class Planet : Saga<PlanetData>
     {
         mapper.MapSaga(saga => saga.PlanetId)
             .ToMessage<CreatePlanet>(msg => msg.PlanetId)
+            .ToMessage<DestroyPlanet>(msg => msg.PlanetId)
             .ToMessage<CatchUp>(msg => msg.PlanetId)
             .ToMessage<DropDrone>(msg => msg.PlanetId)
             .ToMessage<ScanEnvironment>(msg => msg.PlanetId)

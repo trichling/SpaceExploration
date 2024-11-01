@@ -23,7 +23,6 @@ transport.ConnectionString(builder.Configuration["ConnectionStrings:Transport"])
 transport.SubscriptionRuleNamingConvention(type => type.Name);
 
 var routing = transport.Routing();
-routing.RouteToEndpoint(typeof(Create_1_0_10_0_Scoring), "SpaceExploration.Game");
 
 var conventions = endpointConfiguration.Conventions();
 conventions.DefiningCommandsAs(t => t.Namespace != null && t.Namespace.EndsWith("Commands"));

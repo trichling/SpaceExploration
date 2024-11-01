@@ -75,6 +75,11 @@ public class DropDroneCliCommand : ICommand
 
     private async Task DropMultipleDrones(IConsole console)
     {
+        if (string.IsNullOrWhiteSpace(DroneType))
+        {
+            DroneType = "Default";
+        }
+
         for (var i = 0; i < NumberOfDrones; i++)
         {
             var droneId = Guid.NewGuid();
@@ -82,7 +87,7 @@ public class DropDroneCliCommand : ICommand
 
             await console.Output.WriteLineAsync($"Dropping drone with ID '{droneId}' and signature '{droneSignature}' on planet '{PlanetId}'...");
 
-            var dropDrone = new DropDrone(droneId, droneSignature, PlanetId);
+            var dropDrone = new DropDrone(droneId, droneSignature, PlanetId, DroneType, droneId.ToString());
             await _endpointInstance.Send(dropDrone);
         }
     }

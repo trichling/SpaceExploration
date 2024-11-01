@@ -1,3 +1,3 @@
 namespace SpaceExploration.Game.Contracts.Drones.Messages;
 
-public record TurnResult(Guid PlanetId, Guid DroneId);
+public record TurnResult(Guid DroneId, Guid DroneSignature, int Heading);
