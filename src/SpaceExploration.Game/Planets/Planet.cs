@@ -125,12 +125,14 @@ public class Planet : Saga<PlanetData>
 
         if (shootingDrone is null)
         {
+            await context.Reply(new ShotResult(message.DroneId, ShotOutcome.ShootingDroneNotFound));
             return;
         }
 
         if (!Data.SensorReadings.ContainsKey(message.DroneId))
         {
             await context.Publish(new DroneMissed(Data.PlanetId, shootingDrone.DroneSignature));
+            await context.Reply(new ShotResult(message.DroneId, ShotOutcome.NoSensorReadings));
             return;
         }
 
@@ -139,6 +141,7 @@ public class Planet : Saga<PlanetData>
         if (reading is null)
         {
             await context.Publish(new DroneMissed(Data.PlanetId, shootingDrone.DroneSignature));
+            await context.Reply(new ShotResult(message.DroneId, ShotOutcome.NoSensorReadingForTargetId, message.TargetId));
             return;
         }
 
@@ -149,6 +152,7 @@ public class Planet : Saga<PlanetData>
         if (targetDrone == null)
         {
             await context.Publish(new DroneMissed(Data.PlanetId, shootingDrone.DroneSignature));
+            await context.Reply(new ShotResult(message.DroneId, ShotOutcome.TargetDroneNotFound, message.TargetId, reading.DroneSignature));
             return;
         }
 
@@ -160,11 +164,14 @@ public class Planet : Saga<PlanetData>
             Data.Drones.Remove(targetDrone);
 
             await context.Publish(new DroneDestroyed(Data.PlanetId, targetDrone.DroneSignature, shootingDrone.DroneSignature));
+            await context.Reply(new ShotResult(message.DroneId, ShotOutcome.Destroyed, message.TargetId, reading.DroneSignature));
+
             return;
         }
 
         Data.SensorReadings.Remove(message.DroneId);
         await context.Publish(new DroneHit(Data.PlanetId, targetDrone.DroneSignature, shootingDrone.DroneSignature, targetDrone.Health));
+        await context.Reply(new ShotResult(message.DroneId, ShotOutcome.Hit, message.TargetId, reading.DroneSignature));
     }
 
     public async Task Handle(Turn message, IMessageHandlerContext context)
