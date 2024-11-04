@@ -1,5 +1,5 @@
 namespace SpaceExploration.Game.Contracts.Planets.Messages;
-public record CatchUpResponse(Guid PlanetId, List<Drone> Drones);
+public record ScanPlanetResponse(Guid PlanetId, List<Drone> Drones);
 
 public class Drone(Guid droneSignature, string droneType, string droneName, double x, double y, int heading, int health)
 {

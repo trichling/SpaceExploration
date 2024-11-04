@@ -6,9 +6,9 @@ namespace SpaceExploration.Player;
 
 public class Player : BackgroundService
 {
-    public static Guid PlanetId = new Guid("631e3b8a-cbbf-44a8-903d-01aeea42bf38");
-    public static Guid Drone1Id = new Guid("d6fa3ba6-bfd4-47d2-9157-cb8c28c6b123");
-    public static Guid Drone1Signature = new Guid("c0cb6675-cf55-4441-8a13-e72b71994d39");
+    public static Guid PlanetId = new Guid("822cad3c-fb93-4b31-a915-cc88000f5ab0");
+    public static Guid Drone1Id = new Guid("a73e7075-31ff-4967-b625-1499ac9404aa");
+    public static Guid Drone1Signature = new Guid("15a43000-db6f-42cd-b448-572328917161");
 
     private readonly ILogger<Player> _logger;
     private readonly IMessageSession _messageSession;
@@ -26,48 +26,80 @@ public class Player : BackgroundService
         while (!stoppingToken.IsCancellationRequested)
         {
             await Task.Delay(1000, stoppingToken);
+            _logger.LogInformation("Player running at: {time}", DateTimeOffset.Now);
+            //     await _messageSession.Send(new ScanEnvironment(Player.Drone1Id, Player.PlanetId));
         }
     }
-
 }
 
-public class ScanResultHandler : IHandleMessages<ScanEnvironmentResult>
+public class ScanEnvrionmentResultHander : IHandleMessages<ScanEnvironmentResult>
 {
-    private readonly ILogger<ScanResultHandler> _logger;
+    private readonly ILogger<ScanEnvrionmentResultHander> _logger;
 
-    public ScanResultHandler(ILogger<ScanResultHandler> logger)
+    public ScanEnvrionmentResultHander(ILogger<ScanEnvrionmentResultHander> logger)
     {
         _logger = logger;
     }
 
     public async Task Handle(ScanEnvironmentResult message, IMessageHandlerContext context)
     {
-        _logger.LogInformation("Scan result received: {0}", message.SensorReadings.Count);
-
-        if (message.SensorReadings.Count > 0)
+        _logger.LogInformation("ScanEnvironmentResult received {result}", message);
+        if (message.SensorReadings.Any())
         {
-            var firstReading = message.SensorReadings.First();
-            await context.Send(new Shot(Player.PlanetId, Player.Drone1Id, firstReading.ReadingId));
+            await context.Send(new Shot(Player.PlanetId, Player.Drone1Id, message.SensorReadings.First().ReadingId));
         }
         else
         {
-            await context.Send(new Move(Player.PlanetId, Player.Drone1Id));
+            await context.Send(new Turn(Player.PlanetId, Player.Drone1Id, 15));
         }
     }
 }
 
-public class LocatePositionHandler : IHandleMessages<LocatePositionResult>
+public class ShotResultHandler : IHandleMessages<ShotResult>
 {
-    public Task Handle(LocatePositionResult message, IMessageHandlerContext context)
+
+    private readonly ILogger<ShotResultHandler> _logger;
+
+    public ShotResultHandler(ILogger<ShotResultHandler> logger)
     {
-        Console.WriteLine("Position located: {0}, {1}", message.PositionX, message.PositionY);
-        return Task.CompletedTask;
+        _logger = logger;
+    }
+
+    public async Task Handle(ShotResult message, IMessageHandlerContext context)
+    {
+        _logger.LogInformation("ShotResult received {result}", message);
+        await context.Send(new ScanEnvironment(Player.Drone1Id, Player.PlanetId));
+    }
+}
+
+
+public class TurnResultHander : IHandleMessages<TurnResult>
+{
+    private readonly ILogger<TurnResultHander> _logger;
+
+    public TurnResultHander(ILogger<TurnResultHander> logger)
+    {
+        _logger = logger;
+    }
+
+    public async Task Handle(TurnResult message, IMessageHandlerContext context)
+    {
+        _logger.LogInformation("TurnResult received {result}", message);
+        Random random = new Random();
+        if (random.NextDouble() <= 0.7)
+        {
+            await context.Send(new Move(Player.PlanetId, Player.Drone1Id)); // Example turn command
+        }
+        else
+        {
+            await context.Send(new ScanEnvironment(Player.Drone1Id, Player.PlanetId));
+        }
+
     }
 }
 
 public class MoveResultHandler : IHandleMessages<MoveResult>
 {
-
     private readonly ILogger<MoveResultHandler> _logger;
 
     public MoveResultHandler(ILogger<MoveResultHandler> logger)
@@ -77,8 +109,7 @@ public class MoveResultHandler : IHandleMessages<MoveResult>
 
     public async Task Handle(MoveResult message, IMessageHandlerContext context)
     {
-        _logger.LogInformation("Drone moved: {0}", message.DroneId);
-        // 30 percent chance to issue a turn command
+        _logger.LogInformation("MoveResult received {result}", message);
         Random random = new Random();
         if (random.NextDouble() <= 0.3)
         {
@@ -88,70 +119,6 @@ public class MoveResultHandler : IHandleMessages<MoveResult>
         {
             await context.Send(new ScanEnvironment(Player.Drone1Id, Player.PlanetId));
         }
+
     }
-
-}
-
-public class TurnResultHandler : IHandleMessages<TurnResult>
-{
-    private readonly ILogger<TurnResultHandler> _logger;
-
-    public TurnResultHandler(ILogger<TurnResultHandler> logger)
-    {
-        _logger = logger;
-    }
-
-    public async Task Handle(TurnResult message, IMessageHandlerContext context)
-    {
-        _logger.LogInformation("Drone turned: {0}", message.DroneId);
-        // 30 percent chance to issue a move command
-        Random random = new Random();
-        if (random.NextDouble() <= 0.3)
-        {
-            await context.Send(new Move(Player.PlanetId, Player.Drone1Id)); // Example turn command
-        }
-        else
-        {
-            await context.Send(new ScanEnvironment(Player.Drone1Id, Player.PlanetId));
-        }
-    }
-}
-
-public class ShotResultHanders : IHandleMessages<DroneHit>,
-    IHandleMessages<DroneMissed>,
-    IHandleMessages<DroneDestroyed>
-{
-    private readonly ILogger<ShotResultHanders> _logger;
-
-    public ShotResultHanders(ILogger<ShotResultHanders> logger)
-    {
-        _logger = logger;
-    }
-
-    public async Task Handle(DroneHit message, IMessageHandlerContext context)
-    {
-        //_logger.LogInformation("Drone hit: {0}", message.TargetDroneSignature);
-        //if (message.ShootingDroneSignature.Equals(Player.Drone1Signature))
-            await context.Send(new ScanEnvironment(Player.Drone1Id, Player.PlanetId));
-    }
-
-    public async Task Handle(DroneMissed message, IMessageHandlerContext context)
-    {
-        //_logger.LogInformation("Drone missed: {0}", message.DroneSignature);
-        //if (message.DroneSignature.Equals(Player.Drone1Signature))
-            await context.Send(new ScanEnvironment(Player.Drone1Id, Player.PlanetId));
-    }
-
-    public async Task Handle(DroneDestroyed message, IMessageHandlerContext context)
-    {
-        //_logger.LogInformation("Drone destroyed: {0}", message.DroneSignature);
-
-        await context.Send(new ScanEnvironment(Player.Drone1Id, Player.PlanetId));
-        if (message.DroneSignature.Equals(Player.Drone1Signature))
-        {
-            _logger.LogCritical("Someone killed me. I'm out of here.");
-        }
-    }
-
-
 }

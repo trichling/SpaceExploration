@@ -12,8 +12,10 @@ namespace SpaceExploration.Game.Planets;
 public class Planet : Saga<PlanetData>
      , IAmStartedByMessages<CreatePlanet>
      , IHandleMessages<DestroyPlanet>
-     , IHandleMessages<CatchUp>
+     , IHandleMessages<ScanPlanet>
      , IHandleMessages<DropDrone>
+     , IHandleMessages<DestroyDrone>
+     , IHandleMessages<DestroyDronesOfType>
      , IHandleMessages<ScanEnvironment>
      , IHandleMessages<LocatePosition>
      , IHandleMessages<Shot>
@@ -48,9 +50,9 @@ public class Planet : Saga<PlanetData>
         MarkAsComplete();
     }
 
-    public async Task Handle(CatchUp message, IMessageHandlerContext context)
+    public async Task Handle(ScanPlanet message, IMessageHandlerContext context)
     {
-        var repsone = new CatchUpResponse(
+        var repsone = new ScanPlanetResponse(
             Data.PlanetId,
             Data.Drones.Select(d => new Contracts.Planets.Messages.Drone(
                     d.DroneSignature, d.DroneType, d.DroneName, d.Position.X, d.Position.Y, d.Heading.Degrees, d.Health
@@ -59,6 +61,30 @@ public class Planet : Saga<PlanetData>
             .ToList());
 
         await context.Reply(repsone);
+    }
+
+    public async Task Handle(DestroyDrone message, IMessageHandlerContext context)
+    {
+        var drone = Data.Drones.Find(d => d.DroneId == message.DroneId);
+
+        if (drone is null)
+        {
+            return;
+        }
+
+        Data.Drones.Remove(drone);
+        await context.Publish(new DroneDestroyed(Data.PlanetId, drone.DroneSignature, Data.PlanetId));
+    }
+
+    public async Task Handle(DestroyDronesOfType message, IMessageHandlerContext context)
+    {
+        var drones = Data.Drones.Where(d => d.DroneType == message.DroneType).ToList();
+
+        foreach (var drone in drones)
+        {
+            Data.Drones.Remove(drone);
+            await context.Publish(new DroneDestroyed(Data.PlanetId, drone.DroneSignature, Data.PlanetId));
+        }
     }
 
     public async Task Handle(DropDrone message, IMessageHandlerContext context)
@@ -218,8 +244,10 @@ public class Planet : Saga<PlanetData>
         mapper.MapSaga(saga => saga.PlanetId)
             .ToMessage<CreatePlanet>(msg => msg.PlanetId)
             .ToMessage<DestroyPlanet>(msg => msg.PlanetId)
-            .ToMessage<CatchUp>(msg => msg.PlanetId)
+            .ToMessage<ScanPlanet>(msg => msg.PlanetId)
             .ToMessage<DropDrone>(msg => msg.PlanetId)
+            .ToMessage<DestroyDrone>(msg => msg.PlanetId)
+            .ToMessage<DestroyDronesOfType>(msg => msg.PlanetId)
             .ToMessage<ScanEnvironment>(msg => msg.PlanetId)
             .ToMessage<LocatePosition>(msg => msg.PlanetId)
             .ToMessage<Shot>(msg => msg.PlanetId)

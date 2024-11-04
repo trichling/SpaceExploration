@@ -49,7 +49,7 @@ Highlight drone: <input id="highligtedDroneId" type="text"  />
             // Start the timer
             timer.Enabled = true;
 
-            await MessageSession.Send(new CatchUp(WorldIdGuid));
+            await MessageSession.Send(new ScanPlanet(WorldIdGuid));
         }
         else
         {

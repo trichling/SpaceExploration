@@ -30,7 +30,7 @@ public class GameState
         Shots = shots;
     }
 
-    internal void HandleCatchUpResponse(Contracts.Planets.Messages.CatchUpResponse message)
+    internal void HandleCatchUpResponse(ScanPlanetResponse message)
     {
         Drones.Clear();
         Shots.Clear();

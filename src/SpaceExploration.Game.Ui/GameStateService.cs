@@ -17,7 +17,7 @@ public class GameStateService
         return gameState.Freeze();
     }
 
-    internal void HandleCatchUpResponse(CatchUpResponse message)
+    internal void HandleCatchUpResponse(ScanPlanetResponse message)
     {
         var gameState = gameStates.GetOrAdd(message.PlanetId, new GameState(message.PlanetId));
         gameState.HandleCatchUpResponse(message);

@@ -22,7 +22,7 @@ public class RessurectPlayer : Saga<RessurectPlayerData>,
 
     public async Task Handle(DroneDestroyed message, IMessageHandlerContext context)
     {
-        await context.Send(new DropDrone(Data.DroneId, Data.DroneSignature, Data.PlanetId, "Player", Data.DroneNmae));
+        await context.SendLocal(new DropDrone(Data.DroneId, Data.DroneSignature, Data.PlanetId, "Player", Data.DroneNmae));
         MarkAsComplete();
     }
 
