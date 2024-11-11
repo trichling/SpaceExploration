@@ -24,6 +24,71 @@ public class Planet_ScanEnvironment_Tests
         _logger = factory.CreateLogger<Planet>();
     }
 
+    [Fact]
+    public async Task ScanEnvironment_RelativeAngle_Is0WhenDirecltyOppsingDrones()
+    {
+        var planetId = Guid.NewGuid();
+        var scanningDrone = Guid.NewGuid();
+        var visibleDroneId = Guid.NewGuid();
+
+        var drones = new List<Drone>
+        {
+            new Drone(scanningDrone, new Coordinate(0.5, 0.5), new Angle(180)),
+            new Drone(visibleDroneId, new Coordinate(0.45, 0.5), new Angle(0)),
+            // Out of view
+            new Drone(Guid.NewGuid(), new Coordinate(0.6, 0.6), new Angle(0)),
+        };
+
+        var scanResult = EnvironmentalScan.ScanEnvironment(drones.First(), drones);
+        var visibleDrone = scanResult.Single();
+
+        Assert.Equal(0, visibleDrone.RelativeHeading);
+    }
+
+    [Fact]
+    public async Task ScanEnvironment_RelativeAngle_IsMinus5WhenTilted5Degrees()
+    {
+        var planetId = Guid.NewGuid();
+        var scanningDrone = Guid.NewGuid();
+        var visibleDroneId = Guid.NewGuid();
+
+        var drones = new List<Drone>
+        {
+            new Drone(scanningDrone, new Coordinate(0.5, 0.5), new Angle(185)),
+            // Visible
+            new Drone(visibleDroneId, new Coordinate(0.45, 0.5), new Angle(0)),
+            // Out of view
+            new Drone(Guid.NewGuid(), new Coordinate(0.6, 0.6), new Angle(0)),
+        };
+
+        var scanResult = EnvironmentalScan.ScanEnvironment(drones.First(), drones);
+        var visibleDrone = scanResult.Single();
+
+        Assert.Equal(-5, visibleDrone.RelativeHeading);
+    }
+
+    [Fact]
+    public async Task ScanEnvironment_RelativeAngle_Is5WhenTiltedMinus5Degrees()
+    {
+        var planetId = Guid.NewGuid();
+        var scanningDrone = Guid.NewGuid();
+        var visibleDroneId = Guid.NewGuid();
+
+        var drones = new List<Drone>
+        {
+            new Drone(scanningDrone, new Coordinate(0.5, 0.5), new Angle(175)),
+            // Visible
+            new Drone(visibleDroneId, new Coordinate(0.45, 0.5), new Angle(0)),
+            // Out of view
+            new Drone(Guid.NewGuid(), new Coordinate(0.6, 0.6), new Angle(0)),
+        };
+
+        var scanResult = EnvironmentalScan.ScanEnvironment(drones.First(), drones);
+        var visibleDrone = scanResult.Single();
+
+        Assert.Equal(5, visibleDrone.RelativeHeading);
+    }
+
 
     [Fact]
     public async Task ScanEnvironment_CreatesADroneReadingInTheSagaAndReturnsItWithoutTheDroneId()

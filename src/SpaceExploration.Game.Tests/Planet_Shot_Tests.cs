@@ -47,7 +47,7 @@ public class Planet_Shot_Tests
                 {
                     { scanningDrone, new List<SensorReading>()
                         {
-                            new SensorReading(readingId, visibleDroneId, visibleDroneSignature, 0.05, 0.0)
+                            new SensorReading(readingId, visibleDroneId, visibleDroneSignature, 0.05, 0.0, 0.0)
                         }
                     }
                 }
@@ -85,7 +85,7 @@ public class Planet_Shot_Tests
                 {
                     { scanningDrone, new List<SensorReading>()
                         {
-                            new SensorReading(readingId, visibleDroneId, visibleDroneSignature, 0.05, 0)
+                            new SensorReading(readingId, visibleDroneId, visibleDroneSignature, 0.05, 0, 0)
                         }
                     }
                 }
@@ -125,7 +125,7 @@ public class Planet_Shot_Tests
                 {
                     { scanningDrone, new List<SensorReading>()
                         {
-                            new SensorReading(readingId, visibleDroneId,visibleDroneSignature, 0.05, 0)
+                            new SensorReading(readingId, visibleDroneId,visibleDroneSignature, 0.05, 0, 0)
                         }
                     }
                 }
@@ -164,7 +164,7 @@ public class Planet_Shot_Tests
                 {
                     { scanningDrone, new List<SensorReading>()
                         {
-                            new SensorReading(readingId, visibleDroneId, visibleDroneSignature, 0.05, 0)
+                            new SensorReading(readingId, visibleDroneId, visibleDroneSignature, 0.05, 0, 0)
                         }
                     }
                 }
