@@ -55,7 +55,7 @@ public class Planet_ScanEnvironment_Tests
         var scanResult = (ScanEnvironmentResult)context.RepliedMessages.Single().Message;
         Assert.Single(scanResult.SensorReadings);
         var droneReading = scanResult.SensorReadings.Single();
-        Assert.Equal(0, droneReading.Heading);
+        Assert.Equal(0, droneReading.RelativeHeading);
 
         Assert.True(saga.Data.SensorReadings.ContainsKey(scanningDrone));
         var sensorReading = saga.Data.SensorReadings[scanningDrone].Single();

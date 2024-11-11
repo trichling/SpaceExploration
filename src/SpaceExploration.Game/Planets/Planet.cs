@@ -118,7 +118,7 @@ public class Planet : Saga<PlanetData>
         }
 
         var visibleDrones = EnvironmentalScan.ScanEnvironment(drone, Data.Drones);
-        var sensorReadings = visibleDrones.Select(d => new SensorReading(Guid.NewGuid(), d.Drone.DroneId, d.Drone.DroneSignature, d.Distance, d.Angle)).ToList();
+        var sensorReadings = visibleDrones.Select(d => new SensorReading(Guid.NewGuid(), d.Drone.DroneId, d.Drone.DroneSignature, d.Distance, d.RelativeHeading, d.Drone.Heading.Degrees)).ToList();
 
         if (Data.SensorReadings.ContainsKey(message.DroneId))
         {
@@ -129,7 +129,7 @@ public class Planet : Saga<PlanetData>
             Data.SensorReadings.Add(message.DroneId, sensorReadings);
         }
 
-        await context.Reply(new ScanEnvironmentResult(drone.DroneId, drone.DroneSignature, sensorReadings.Select(sr => new DroneReading(sr.ReadingId, sr.DroneSignature, sr.Distance, sr.Angle)).ToList()));
+        await context.Reply(new ScanEnvironmentResult(drone.DroneId, drone.DroneSignature, sensorReadings.Select(sr => new DroneReading(sr.ReadingId, sr.DroneSignature, sr.Distance, sr.RelativeHeading, sr.Heading)).ToList()));
     }
 
     public async Task Handle(LocatePosition message, IMessageHandlerContext context)
@@ -266,4 +266,4 @@ public class PlanetData : ContainSagaData
 
 }
 
-public record SensorReading(Guid ReadingId, Guid DroneId, Guid DroneSignature, double Distance, double Angle);
+public record SensorReading(Guid ReadingId, Guid DroneId, Guid DroneSignature, double Distance, double RelativeHeading, double Heading);

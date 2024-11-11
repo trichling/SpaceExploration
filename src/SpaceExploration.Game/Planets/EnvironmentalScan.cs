@@ -11,7 +11,7 @@ public class EnvironmentalScan
         {
             if (otherDrone != drone)
             {
-                var sensorReading = IsDroneVisible(drone, otherDrone); 
+                var sensorReading = IsDroneVisible(drone, otherDrone);
                 if (sensorReading != null)
                 {
                     visibleDrones.Add(sensorReading);
@@ -47,4 +47,4 @@ public class EnvironmentalScan
 }
 
 
-public record VisibleDrone(Drone Drone, double Distance, double Angle);
+public record VisibleDrone(Drone Drone, double Distance, double RelativeHeading);
