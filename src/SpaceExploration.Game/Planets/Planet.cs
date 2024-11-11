@@ -141,7 +141,7 @@ public class Planet : Saga<PlanetData>
             return;
         }
 
-        await context.Reply(new LocatePositionResult(message.DroneId, drone.Heading.Degrees, drone.Position.X, drone.Position.Y));
+        await context.Reply(new LocatePositionResult(message.DroneId, drone.DroneSignature, drone.Heading.Degrees, drone.Position.X, drone.Position.Y));
     }
 
 
