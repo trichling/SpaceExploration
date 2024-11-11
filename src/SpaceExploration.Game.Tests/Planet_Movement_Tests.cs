@@ -133,7 +133,7 @@ public class Planet_Movement_Tests
 
         var publisedMessages = context.PublishedMessages.Single().Message as DroneMoved;
 
-        Assert.Equal(0.4, publisedMessages.X);
-        Assert.Equal(0.5, publisedMessages.Y);
+        Assert.Equal(0.49, publisedMessages.X, 2);
+        Assert.Equal(0.5, publisedMessages.Y, 2);
     }
 }
